@@ -35,3 +35,21 @@ class Deck():
 
     def __setitem__(self, key, val):
         self.deck[key] = val
+
+    def count(self, item):
+        return self.deck.count(item)
+
+    def __eq__(self, other):
+        return self.deck == other.deck
+
+    def draw(self):
+        return self.deck.pop()
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if len(self) == 0:
+            raise StopIteration
+        else:
+            return self.draw()
