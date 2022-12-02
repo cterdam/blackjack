@@ -16,12 +16,19 @@ class Card():
 
         if suit != None:
             # Ordinary card
-            assert suit in Card.suits
-            assert rank in Card.ranks
+            if suit not in Card.suits:
+                raise AssertionError(
+                    f'For ordinary cards, suit must be in {Card.suits}')
+            if rank not in Card.ranks:
+                raise AssertionError(
+                    f'For ordinary cards, rank must be in {Card.ranks}')
         else:
             # Special card
-            assert self.suit == None
-            assert rank in Card.special_values
+            if suit != None:
+                raise AssertionError('For special cards, suit must be None')
+            if rank not in Card.special_values:
+                raise AssertionError(
+                    f'For special cards, rank must be in {Card.special_values}')
 
         self.suit = suit
         self.rank = rank
