@@ -13,6 +13,12 @@ class Card():
                 '8', 9: '9', 10: '10', 'Jack': 'J', 'Queen': 'Q', 'King': 'K'}
 
     def __init__(self, suit, rank):
+        """
+        Initializes card.
+        For ordinary cards, valid suit and rank values are set above.
+        For special cards (Joker), suit should be None and valid rank values
+        are set above.
+        """
 
         if suit != None:
             # Ordinary card
@@ -65,6 +71,11 @@ class Card():
 
     @classmethod
     def random(cls, include_special=False):
+        """
+        Returns a random card. This is not the same as returning a random
+        member of a playing deck. Running this function n times, across all
+        trials the distribution of all possible outcomes is the same.
+        """
         if include_special:
             rank = random.sample(Card.ranks+Card.special_values, 1)[0]
             if rank in Card.ranks:
