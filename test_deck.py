@@ -21,13 +21,13 @@ def test_init_params():
 
     # include_special must be boolean
     with pytest.raises(AssertionError):
-        Deck(include_special='True')
-        Deck(include_special=None)
-        Deck(include_special=0)
-        Deck(include_special=[False])
-        Deck(include_special=(False))
-    Deck(include_special=True)
-    Deck(include_special=False)
+        Deck(include_joker='True')
+        Deck(include_joker=None)
+        Deck(include_joker=0)
+        Deck(include_joker=[False])
+        Deck(include_joker=(False))
+    Deck(include_joker=True)
+    Deck(include_joker=False)
 
     # ordered must be boolean
     with pytest.raises(AssertionError):
@@ -42,43 +42,43 @@ def test_init_params():
 
 def test_len():
     # Length of spawned deck
-    assert len(Deck(num_full_decks=1, include_special=False)) == 52
-    assert len(Deck(num_full_decks=1, include_special=True)) == 54
-    assert len(Deck(num_full_decks=2, include_special=False)) == 2 * \
-        len(Deck(num_full_decks=1, include_special=False))
-    assert len(Deck(num_full_decks=6, include_special=False)) == 3 * \
-        len(Deck(num_full_decks=2, include_special=False))
-    assert len(Deck(num_full_decks=24, include_special=False)) == 8 * \
-        len(Deck(num_full_decks=3, include_special=False))
-    assert len(Deck(num_full_decks=2, include_special=True)) == 2 * \
-        len(Deck(num_full_decks=1, include_special=True))
-    assert len(Deck(num_full_decks=6, include_special=True)) == 3 * \
-        len(Deck(num_full_decks=2, include_special=True))
-    assert len(Deck(num_full_decks=24, include_special=True)) == 8 * \
-        len(Deck(num_full_decks=3, include_special=True))
+    assert len(Deck(num_full_decks=1, include_joker=False)) == 52
+    assert len(Deck(num_full_decks=1, include_joker=True)) == 54
+    assert len(Deck(num_full_decks=2, include_joker=False)) == 2 * \
+        len(Deck(num_full_decks=1, include_joker=False))
+    assert len(Deck(num_full_decks=6, include_joker=False)) == 3 * \
+        len(Deck(num_full_decks=2, include_joker=False))
+    assert len(Deck(num_full_decks=24, include_joker=False)) == 8 * \
+        len(Deck(num_full_decks=3, include_joker=False))
+    assert len(Deck(num_full_decks=2, include_joker=True)) == 2 * \
+        len(Deck(num_full_decks=1, include_joker=True))
+    assert len(Deck(num_full_decks=6, include_joker=True)) == 3 * \
+        len(Deck(num_full_decks=2, include_joker=True))
+    assert len(Deck(num_full_decks=24, include_joker=True)) == 8 * \
+        len(Deck(num_full_decks=3, include_joker=True))
 
 
 def test_count():
     # Card counts
-    one_deck_no_special = Deck(num_full_decks=1, include_special=False)
+    one_deck_no_special = Deck(num_full_decks=1, include_joker=False)
     assert one_deck_no_special.count(Card('Spades', 2)) == 1
     assert one_deck_no_special.count(Card('Hearts', 'Ace')) == 1
     assert one_deck_no_special.count(Card('Diamonds', 'Jack')) == 1
     assert one_deck_no_special.count(Card(None, 'Little Joker')) == 0
     assert one_deck_no_special.count(Card(None, 'Big Joker')) == 0
-    one_deck_with_special = Deck(num_full_decks=1, include_special=True)
+    one_deck_with_special = Deck(num_full_decks=1, include_joker=True)
     assert one_deck_with_special.count(Card('Spades', 2)) == 1
     assert one_deck_with_special.count(Card('Hearts', 'Ace')) == 1
     assert one_deck_with_special.count(Card('Diamonds', 'Jack')) == 1
     assert one_deck_with_special.count(Card(None, 'Little Joker')) == 1
     assert one_deck_with_special.count(Card(None, 'Big Joker')) == 1
-    four_deck_no_special = Deck(num_full_decks=4, include_special=False)
+    four_deck_no_special = Deck(num_full_decks=4, include_joker=False)
     assert four_deck_no_special.count(Card('Spades', 2)) == 4
     assert four_deck_no_special.count(Card('Hearts', 'Ace')) == 4
     assert four_deck_no_special.count(Card('Diamonds', 'Jack')) == 4
     assert four_deck_no_special.count(Card(None, 'Little Joker')) == 0
     assert four_deck_no_special.count(Card(None, 'Big Joker')) == 0
-    four_deck_with_special = Deck(num_full_decks=4, include_special=True)
+    four_deck_with_special = Deck(num_full_decks=4, include_joker=True)
     assert four_deck_with_special.count(Card('Spades', 2)) == 4
     assert four_deck_with_special.count(Card('Hearts', 'Ace')) == 4
     assert four_deck_with_special.count(Card('Diamonds', 'Jack')) == 4
@@ -86,9 +86,12 @@ def test_count():
     assert four_deck_with_special.count(Card(None, 'Big Joker')) == 4
 
 
-def test_order_and_eq():
+def test_order():
     # Ordered
     assert Deck(ordered=False) != Deck(ordered=False)
+
+
+def test_eq():
     d1 = Deck(ordered=True)
     d2 = Deck(ordered=True)
     assert d1 == d2
@@ -97,11 +100,15 @@ def test_order_and_eq():
     else:
         d1[-1].suit = 'Clubs'
     assert d1 != d2
+    assert d1 != None
+    assert d2 != 3
+    assert d1 != len(d1)
+    assert d2 != Card('Spades', 3)
 
 
 def test_different_object_and_iter():
     # Cards should be different objects
-    d = Deck(include_special=False)
+    d = Deck(include_joker=False)
     tallysuit = {suit: 0 for suit in Card.suits}
     expectation = {suit: 13 for suit in Card.suits}
 
@@ -126,10 +133,24 @@ def test_different_object_and_iter():
 
 
 def test_draw():
-    d = Deck(include_special=True)
+    d = Deck(include_joker=True)
     cardpeek = d[-1]
     len1 = len(d)
     c = d.draw()
     assert c == cardpeek
     len2 = len(d)
     assert len2 == len1-1
+
+
+def test_insert():
+    d = Deck()
+    special_value = 'SPECIAL'
+    assert d[10] != special_value
+    d.insert(10, special_value)
+    assert d[10] == special_value
+    assert d[0] != special_value
+    d.insert(0, special_value)
+    assert d[0] == special_value
+    assert d[-1] != special_value
+    d.insert(-1, special_value)
+    assert d[-2] == special_value

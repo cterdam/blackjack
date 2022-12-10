@@ -3,34 +3,34 @@ import random
 
 
 class Deck():
-    def __init__(self, num_full_decks=1, include_special=False, ordered=False):
+    def __init__(self, num_full_decks=1, include_joker=False, ordered=False):
         """
         Initializes deck.
 
         Params:
             num_full_decks: How many full decks to include in this playing deck
-            include_special: Whether to include special cards (Jokers)
+            include_joker: Whether to include joker cards
             ordered: Whether the resulting deck should be ordered
         """
 
         if type(num_full_decks) is not int or num_full_decks < 1:
             raise AssertionError('num_full_decks must be a positive integer')
-        if type(include_special) is not bool:
-            raise AssertionError('include_special must be a boolean')
+        if type(include_joker) is not bool:
+            raise AssertionError('include_joker must be a boolean')
         if type(ordered) is not bool:
             raise AssertionError('ordered must be a boolean')
 
-        def get_single_deck(include_special):
+        def get_single_deck(include_joker):
             result = [Card(suit, rank) for suit in Card.suits for rank in
                       Card.ranks]
-            if include_special:
-                result += [Card(None, special_value)
-                           for special_value in Card.special_values]
+            if include_joker:
+                result += [Card(None, joker_value)
+                           for joker_value in Card.jokers]
             return result
 
         self.deck = []
         for _ in range(num_full_decks):
-            self.deck += get_single_deck(include_special)
+            self.deck += get_single_deck(include_joker)
 
         if not ordered:
             random.shuffle(self.deck)
@@ -47,6 +47,12 @@ class Deck():
         """
         return self.deck.count(item)
 
+    def insert(self, idx, item):
+        """
+        Inserts the item into this index
+        """
+        self.deck.insert(idx, item)
+
     def __len__(self):
         """
         Returns number of cards in deck.
@@ -60,6 +66,8 @@ class Deck():
         self.deck[key] = val
 
     def __eq__(self, other):
+        if not isinstance(other, Deck):
+            return False
         return self.deck == other.deck
 
     def __iter__(self):

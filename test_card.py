@@ -23,7 +23,7 @@ def test_init():
     Card('Hearts', 'Ace')
     Card('Clubs', 'Queen')
 
-    # Special cards
+    # Joker cards
     with pytest.raises(AssertionError):
         # Invalid suit, valid rank
         Card('Spades', 'Little Joker')
@@ -81,16 +81,16 @@ def test_is_face():
     assert not Card(None, 'Little Joker').is_face()
 
 
-def test_is_special():
+def test_is_joker():
 
-    # These are special
-    assert Card(None, 'Little Joker').is_special()
-    assert Card(None, 'Big Joker').is_special()
+    # These are jokers
+    assert Card(None, 'Little Joker').is_joker()
+    assert Card(None, 'Big Joker').is_joker()
 
-    # These are not special
-    assert not Card('Diamonds', 'Ace').is_special()
-    assert not Card('Hearts', 8).is_special()
-    assert not Card('Clubs', 'Queen').is_special()
+    # These are not jokers
+    assert not Card('Diamonds', 'Ace').is_joker()
+    assert not Card('Hearts', 8).is_joker()
+    assert not Card('Clubs', 'Queen').is_joker()
 
 
 def test_str():
@@ -143,6 +143,9 @@ def test_eq_and_hash():
     assert Card('Spades', 4) != Card(None, 'Little Joker')
     assert Card('Hearts', 'King') != Card(None, 'Big Joker')
     assert Card(None, 'Little Joker') != Card(None, 'Big Joker')
+    assert Card(None, 'Little Joker') != Card
+    assert Card(None, 'Little Joker') != 'Card'
+    assert Card(None, 'Little Joker') != None
 
 
 def test_random():
