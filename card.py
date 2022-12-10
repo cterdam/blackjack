@@ -15,6 +15,9 @@ class Card():
     def __init__(self, suit, rank):
         """
         Initializes card.
+
+        Params: suit, rank.
+
         For ordinary cards, valid suit and rank values are set above.
         For joker cards, suit should be None and valid rank values
         are set above.
