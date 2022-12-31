@@ -17,10 +17,8 @@ class Card():
         Initializes card.
 
         Params: suit, rank.
-
-        For ordinary cards, valid suit and rank values are set above.
-        For joker cards, suit should be None and valid rank values
-        are set above.
+        Req: either (suit in Card.suits and rank in Card.ranks)
+             or     (suit == None and rank in Card.jokers)
         """
 
         if suit != None:
