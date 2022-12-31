@@ -13,6 +13,7 @@ class Game():
 
         Params:
             game_config (GameConfig): Config for the game.
+                Req: None
         """
 
         self.config = game_config
@@ -24,6 +25,7 @@ class Game():
 
         Params:
             config (GameConfig): Config for a game.
+                Req: None
         """
         d = Deck(num_full_decks=config.num_decks)
         d.insert(int(config.reshuffle_threshold * len(d)), Game.cut_card)

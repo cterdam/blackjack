@@ -8,11 +8,16 @@ class Deck():
         Initializes deck.
 
         Params:
+
             num_full_decks (int): Number of full decks to include in this
                 playing deck.
                 Req: num_full_decks > 1
+
             include_joker (bool): Whether to include joker cards.
+                Req: None
+
             ordered (bool): Whether the resulting deck should be ordered.
+                Req: None
         """
 
         if type(num_full_decks) is not int or num_full_decks < 1:
