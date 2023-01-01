@@ -13,12 +13,14 @@ def test_init_params():
         GameConfig(num_decks='4')
         GameConfig(num_decks='0')
         GameConfig(num_decks=-1)
+        GameConfig(num_decks=-0.5)
         GameConfig(num_decks=0)
+        GameConfig(num_decks=0.5)
     GameConfig(num_decks=1)
     GameConfig(num_decks=2)
     GameConfig(num_decks=10)
 
-    # reshuffle_threshold must be float or int between 0 and 1
+    # reshuffle_threshold must be int or float between 0 and 1
     with pytest.raises(AssertionError):
         GameConfig(reshuffle_threshold=None)
         GameConfig(reshuffle_threshold=True)
@@ -54,17 +56,88 @@ def test_init_params():
         GameConfig(max_hands='4')
         GameConfig(max_hands='0')
         GameConfig(max_hands=-1)
+        GameConfig(max_hands=-0.5)
         GameConfig(max_hands=0)
+        GameConfig(max_hands=0.5)
     GameConfig(max_hands=1)
     GameConfig(max_hands=2)
     GameConfig(max_hands=10)
 
-    # late_surrender must be a boolean
+    # normal_pay must be int or float
     with pytest.raises(AssertionError):
-        GameConfig(late_surrender='True')
-        GameConfig(late_surrender=None)
-        GameConfig(late_surrender=0)
-        GameConfig(late_surrender=[False])
-        GameConfig(late_surrender=(False))
-    GameConfig(late_surrender=True)
-    GameConfig(late_surrender=False)
+        GameConfig(normal_pay=None)
+        GameConfig(normal_pay=True)
+        GameConfig(normal_pay=[0.2])
+        GameConfig(normal_pay=(0.3))
+        GameConfig(normal_pay='0.4')
+        GameConfig(normal_pay='0')
+    GameConfig(normal_pay=-1)
+    GameConfig(normal_pay=0)
+    GameConfig(normal_pay=0.25)
+    GameConfig(normal_pay=0.33)
+    GameConfig(normal_pay=0.5)
+    GameConfig(normal_pay=1)
+    GameConfig(normal_pay=2)
+    GameConfig(normal_pay=3.14)
+
+    # blackjack_pay must be int or float
+    with pytest.raises(AssertionError):
+        GameConfig(blackjack_pay=None)
+        GameConfig(blackjack_pay=True)
+        GameConfig(blackjack_pay=[0.2])
+        GameConfig(blackjack_pay=(0.3))
+        GameConfig(blackjack_pay='0.4')
+        GameConfig(blackjack_pay='0')
+    GameConfig(blackjack_pay=-1)
+    GameConfig(blackjack_pay=0)
+    GameConfig(blackjack_pay=0.25)
+    GameConfig(blackjack_pay=0.33)
+    GameConfig(blackjack_pay=0.5)
+    GameConfig(blackjack_pay=1)
+    GameConfig(blackjack_pay=3/2)
+    GameConfig(blackjack_pay=2)
+    GameConfig(blackjack_pay=3.14)
+
+    # natural_blackjack_only must be a boolean
+    with pytest.raises(AssertionError):
+        GameConfig(natural_blackjack_only='True')
+        GameConfig(natural_blackjack_only=None)
+        GameConfig(natural_blackjack_only=0)
+        GameConfig(natural_blackjack_only=[False])
+        GameConfig(natural_blackjack_only=(False))
+    GameConfig(natural_blackjack_only=True)
+    GameConfig(natural_blackjack_only=False)
+
+    # blackjack_value must be int
+    with pytest.raises(AssertionError):
+        GameConfig(blackjack_value=None)
+        GameConfig(blackjack_value=True)
+        GameConfig(blackjack_value=[2])
+        GameConfig(blackjack_value=(3))
+        GameConfig(blackjack_value='4')
+        GameConfig(blackjack_value='0')
+        GameConfig(blackjack_value=-0.5)
+        GameConfig(blackjack_value=0.5)
+    GameConfig(blackjack_value=-1)
+    GameConfig(blackjack_value=1)
+    GameConfig(blackjack_value=0)
+    GameConfig(blackjack_value=2)
+    GameConfig(blackjack_value=10)
+    GameConfig(blackjack_value=21)
+
+    # initial_hand_size must be nonnegative int
+    with pytest.raises(AssertionError):
+        GameConfig(initial_hand_size=None)
+        GameConfig(initial_hand_size=True)
+        GameConfig(initial_hand_size=[2])
+        GameConfig(initial_hand_size=(3))
+        GameConfig(initial_hand_size='4')
+        GameConfig(initial_hand_size='0')
+        GameConfig(initial_hand_size=-1)
+        GameConfig(initial_hand_size=-0.5)
+        GameConfig(initial_hand_size=0.5)
+    GameConfig(initial_hand_size=0)
+    GameConfig(initial_hand_size=1)
+    GameConfig(initial_hand_size=2)
+    GameConfig(initial_hand_size=10)
+    GameConfig(initial_hand_size=21)

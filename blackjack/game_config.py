@@ -88,8 +88,8 @@ class GameConfig():
             raise AssertionError('natural_blackjack_only must be a boolean')
         if type(blackjack_value) is not int:
             raise AssertionError('blackjack_value must be int')
-        if type(initial_hand_size) is not int:
-            raise AssertionError('initial_hand_size must be int')
+        if type(initial_hand_size) is not int or initial_hand_size < 0:
+            raise AssertionError('initial_hand_size must be nonnegative int')
 
         self.num_decks = num_decks
         self.reshuffle_threshold = reshuffle_threshold
