@@ -13,7 +13,8 @@ class Deck():
                 playing deck.
                 Req: num_full_decks > 1
 
-            include_joker (bool): Whether to include joker cards.
+            include_joker (bool): Whether to include joker cards in each full
+                deck.
                 Req: None
 
             ordered (bool): Whether the resulting deck should be ordered.
@@ -28,10 +29,10 @@ class Deck():
             raise AssertionError('ordered must be a boolean')
 
         def get_single_deck(include_joker):
-            result = [Card(suit, rank) for suit in Card.suits for rank in
-                      Card.ranks]
+            result = [Card(rank, suit)
+                      for rank in Card.ranks for suit in Card.suits]
             if include_joker:
-                result += [Card(None, joker_value)
+                result += [Card(joker_value)
                            for joker_value in Card.jokers]
             return result
 
@@ -45,20 +46,34 @@ class Deck():
     def draw(self):
         """
         Removes the top card (last member of the deck array) and returns it.
+        If the deck is empty, returns None.
         """
-        return self.deck.pop()
+        if len(self.deck) > 0:
+            return self.deck.pop()
+        else:
+            return None
 
-    def count(self, item):
+    def insert(self, idx, c):
         """
-        How many cards equal to this is present in the deck?
-        """
-        return self.deck.count(item)
+        Inserts a card into this index.
 
-    def insert(self, idx, item):
+        To insert to the top of the deck, use idx=len(Deck) so the item will
+        be returned at the next draw. To insert to the bottom of the deck, use
+        idx=0.
+
+        Params:
+            idx (int): An index within the deck.
+                Req: None
+            c (Card): The card to insert.
+                Req: None
+        Returns:
+            None
         """
-        Inserts the item into this index
-        """
-        self.deck.insert(idx, item)
+        if not isinstance(idx, int):
+            raise AssertionError('Deck insertion index must be int.')
+        if not isinstance(c, Card):
+            raise AssertionError('Only cards can be inserted into a deck.')
+        self.deck.insert(idx, c)
 
     def __len__(self):
         """
@@ -66,28 +81,38 @@ class Deck():
         """
         return len(self.deck)
 
-    def __getitem__(self, idx):
-        return self.deck[idx]
-
-    def __setitem__(self, key, val):
-        self.deck[key] = val
-
     def __eq__(self, other):
         if not isinstance(other, Deck):
             return False
         return self.deck == other.deck
 
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        if len(self) == 0:
-            raise StopIteration
-        else:
-            return self.draw()
-
     def __str__(self):
+        """
+        Short string representation of the deck.
+        """
         return f'Deck of {len(self)} cards'
 
     def __repr__(self):
-        return f'Deck of {len(self)} cards'
+        """
+        Long string representation of the deck.
+
+        Returns (str):
+            If the deck contains more than 3 cards
+                -> 'Deck [ ♥9 ... ♣4 ]'
+            Else
+                -> 'Deck [ ♠K ♠2 ♣4 ]'
+                -> 'Deck [ ♠2 ♣4 ]'
+                -> 'Deck [ ♣4 ]'
+                -> 'Deck [ ]'
+            In each case the leftmost card is the top in the deck, which is in
+            position for the next draw.
+        """
+        if len(self.deck) > 3:
+            return f'Deck [ {str(self.deck[-1])} ... {str(self.deck[0])} ]'
+        else:
+            target = 'Deck [ '
+            for c in reversed(self.deck):
+                target += str(c)
+                target += ' '
+            target += ']'
+            return target
