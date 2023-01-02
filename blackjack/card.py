@@ -3,7 +3,7 @@ import random
 
 class Card():
 
-    ### Define constants ###
+    ############################ Define constants ############################
 
     # Suits
     CLUBS = 'Clubs'
@@ -13,15 +13,15 @@ class Card():
     JOKER_SUIT = None
 
     # Numbers
-    NUM_2 = 2
-    NUM_3 = 3
-    NUM_4 = 4
-    NUM_5 = 5
-    NUM_6 = 6
-    NUM_7 = 7
-    NUM_8 = 8
-    NUM_9 = 9
-    NUM_10 = 10
+    NUM_2 = '2'
+    NUM_3 = '3'
+    NUM_4 = '4'
+    NUM_5 = '5'
+    NUM_6 = '6'
+    NUM_7 = '7'
+    NUM_8 = '8'
+    NUM_9 = '9'
+    NUM_10 = '10'
 
     # Faces
     JACK = 'Jack'
@@ -42,7 +42,7 @@ class Card():
     ranks = (ACE,) + numbers + faces
     jokers = (LITTLE_JOKER, BIG_JOKER)
 
-    # Utility dictionaries
+    # Representation dictionaries
     rank2str = {ACE: 'A', NUM_2: '2', NUM_3: '3', NUM_4: '4', NUM_5: '5',
                 NUM_6: '6', NUM_7: '7', NUM_8: '8', NUM_9: '9', NUM_10: '10',
                 JACK: 'J', QUEEN: 'Q', KING: 'K',
@@ -56,7 +56,11 @@ class Card():
     suit2repr = {CLUBS: 'Clubs', DIAMONDS: 'Diamonds', HEARTS: 'Hearts',
                  SPADES: 'Spades', JOKER_SUIT: ''}
 
-    def __init__(self, rank, suit=JOKER_SUIT):
+    RANDOM_FLAG = 'Random Flag'
+
+    ##########################################################################
+
+    def __init__(self, rank=RANDOM_FLAG, suit=JOKER_SUIT):
         """
         Initializes card.
 
@@ -71,6 +75,10 @@ class Card():
             >>> Card(Card.LITTLE_JOKER)
         """
 
+        if rank == Card.RANDOM_FLAG:
+            target = Card.random()
+            suit, rank = target.suit, target.rank
+
         if not (rank in Card.ranks and suit in Card.suits) and\
                 not (rank in Card.jokers and suit == Card.JOKER_SUIT):
             raise AssertionError('Invalid initialization parameters. For '
@@ -80,8 +88,8 @@ class Card():
                                  f'must be None. Got rank = {rank} and suit = '
                                  f'{suit}.')
 
-        self.suit = suit
         self.rank = rank
+        self.suit = suit
 
         # Properties
         self.is_ace = self.rank == Card.ACE
@@ -90,19 +98,17 @@ class Card():
         self.is_joker = self.rank in Card.jokers
 
         # Short string representation
-        self.rank_str = Card.rank2str[self.rank]  # A, 2, 3, ..., J, Q, K
-        self.suit_str = Card.suit2str[self.suit]  # ♣, ♦, ♥, ♠
-        self.str = self.suit_str + self.rank_str  # ♣A, ♥2, ♦Q
+        # ♣A, ♥2, ♦Q, Big Joker
+        self.str = Card.suit2str[self.suit] + Card.rank2str[self.rank]
 
         # Long string representation
-        self.rank_repr = Card.rank2repr[self.rank]  # Ace, 2, 3, ..., Jack, ...
-        self.suit_repr = Card.suit2repr[self.suit]  # Clubs, Diamonds, ...
-        self.repr = self.rank_repr + (' of ' if not self.is_joker else '') +\
-            self.suit_repr  # Ace of Clubs, 2 of Spades, Queen of Hearts
+        # Ace of Clubs, 2 of Hearts, Queen of Diamonds, Big Joker
+        self.repr = Card.rank2repr[self.rank] + \
+            (' of ' if not self.is_joker else '') + Card.suit2repr[self.suit]
 
     def __str__(self):
         """
-        Gives the short string form of the card.
+        Gives the short string representation of the card.
 
         Returns (str):
             For ordinary cards
@@ -117,7 +123,7 @@ class Card():
 
     def __repr__(self):
         """
-        Gives the long string form of the card.
+        Gives the long string representation of the card.
 
         Returns (str):
             For ordinary cards
@@ -137,10 +143,10 @@ class Card():
         """
         if not isinstance(other, Card):
             return False
-        return self.suit == other.suit and self.rank == other.rank
+        return self.rank == other.rank and self.suit == other.suit
 
     def __hash__(self):
-        return hash((self.suit, self.rank))
+        return hash((self.rank, self.suit))
 
     @classmethod
     def random(cls, include_joker=False):
@@ -154,9 +160,9 @@ class Card():
             if rank in Card.ranks:
                 suit = random.sample(Card.suits, 1)[0]
             else:
-                suit = None
-            return Card(suit, rank)
+                suit = Card.JOKER_SUIT
+            return Card(rank, suit)
         else:
             rank = random.sample(Card.ranks, 1)[0]
             suit = random.sample(Card.suits, 1)[0]
-            return Card(suit, rank)
+            return Card(rank, suit)
