@@ -35,6 +35,9 @@ class Card():
     LITTLE_JOKER = 'Little Joker'
     BIG_JOKER = 'Big Joker'
 
+    # Flag for initializing a random card
+    RANDOM_FLAG = 'Random Flag'
+
     # Collections
     suits = (CLUBS, DIAMONDS, HEARTS, SPADES)
     numbers = (NUM_2, NUM_3, NUM_4, NUM_5, NUM_6, NUM_7, NUM_8, NUM_9, NUM_10)
@@ -55,8 +58,6 @@ class Card():
                  LITTLE_JOKER: 'Little Joker', BIG_JOKER: 'Big Joker'}
     suit2repr = {CLUBS: 'Clubs', DIAMONDS: 'Diamonds', HEARTS: 'Hearts',
                  SPADES: 'Spades', JOKER_SUIT: ''}
-
-    RANDOM_FLAG = 'Random Flag'
 
     ##########################################################################
 
