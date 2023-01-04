@@ -47,6 +47,12 @@ class Deck():
         """
         Removes the top card (last member of the deck array) and returns it.
         If the deck is empty, returns None.
+
+        Returns:
+            if len(self) > 0
+                -> c (Card)
+            else
+                -> None
         """
         if len(self.deck) > 0:
             return self.deck.pop()
@@ -66,6 +72,7 @@ class Deck():
                 Req: None
             c (Card): The card to insert.
                 Req: None
+
         Returns:
             None
         """
