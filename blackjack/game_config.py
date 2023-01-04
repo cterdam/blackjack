@@ -2,8 +2,7 @@ class GameConfig():
 
     def __init__(self, num_decks=8, reshuffle_threshold=0.25,
                  double_after_split=True, max_hands=4, normal_pay=1,
-                 blackjack_pay=3/2, natural_blackjack_only=True,
-                 blackjack_value=21, initial_hand_size=2):
+                 blackjack_pay=3/2, natural_blackjack_only=True):
         """
         Config for a Blackjack game.
 
@@ -55,18 +54,6 @@ class GameConfig():
                 blackjack pay for any winning hand that contains as many cards
                 as the initial hand and sums to the blackjack value.
                 Req: None
-
-            blackjack_value (int): If the initial cards dealt to the player's
-                hand directly sum to this number and they win, they are
-                awarded the blackjack pay instead of the normal pay. Note that
-                a player hand summing to this value could also result in push
-                if the dealer has the same sum.
-                Req: None
-
-            initial_hand_size (int): The number of cards dealt initially to
-                the player. The dealer receives the same number of cards, but
-                only the first card is shown.
-                Req: initial_hand_size >= 0
         """
 
         if type(num_decks) is not int or num_decks < 1:
@@ -86,10 +73,6 @@ class GameConfig():
             raise AssertionError('blackjack_pay must be int or float')
         if type(natural_blackjack_only) is not bool:
             raise AssertionError('natural_blackjack_only must be a boolean')
-        if type(blackjack_value) is not int:
-            raise AssertionError('blackjack_value must be int')
-        if type(initial_hand_size) is not int or initial_hand_size < 0:
-            raise AssertionError('initial_hand_size must be nonnegative int')
 
         self.num_decks = num_decks
         self.reshuffle_threshold = reshuffle_threshold
@@ -98,5 +81,3 @@ class GameConfig():
         self.normal_pay = normal_pay
         self.blackjack_pay = blackjack_pay
         self.natural_blackjack_only = natural_blackjack_only
-        self.blackjack_value = blackjack_value
-        self.initial_hand_size = initial_hand_size

@@ -107,37 +107,3 @@ def test_init_params():
         GameConfig(natural_blackjack_only=(False))
     GameConfig(natural_blackjack_only=True)
     GameConfig(natural_blackjack_only=False)
-
-    # blackjack_value must be int
-    with pytest.raises(AssertionError):
-        GameConfig(blackjack_value=None)
-        GameConfig(blackjack_value=True)
-        GameConfig(blackjack_value=[2])
-        GameConfig(blackjack_value=(3))
-        GameConfig(blackjack_value='4')
-        GameConfig(blackjack_value='0')
-        GameConfig(blackjack_value=-0.5)
-        GameConfig(blackjack_value=0.5)
-    GameConfig(blackjack_value=-1)
-    GameConfig(blackjack_value=1)
-    GameConfig(blackjack_value=0)
-    GameConfig(blackjack_value=2)
-    GameConfig(blackjack_value=10)
-    GameConfig(blackjack_value=21)
-
-    # initial_hand_size must be nonnegative int
-    with pytest.raises(AssertionError):
-        GameConfig(initial_hand_size=None)
-        GameConfig(initial_hand_size=True)
-        GameConfig(initial_hand_size=[2])
-        GameConfig(initial_hand_size=(3))
-        GameConfig(initial_hand_size='4')
-        GameConfig(initial_hand_size='0')
-        GameConfig(initial_hand_size=-1)
-        GameConfig(initial_hand_size=-0.5)
-        GameConfig(initial_hand_size=0.5)
-    GameConfig(initial_hand_size=0)
-    GameConfig(initial_hand_size=1)
-    GameConfig(initial_hand_size=2)
-    GameConfig(initial_hand_size=10)
-    GameConfig(initial_hand_size=21)
