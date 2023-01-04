@@ -110,15 +110,15 @@ def test_different_objects():
 
 def test_draw():
     d = Deck(include_joker=True)
-    cardpeek = d.deck[-1]
-    len1 = len(d)
-    c = d.draw()
-    assert c == cardpeek
-    len2 = len(d)
-    assert len2 == len1-1
 
     while(len(d) > 0):
-        d.draw()
+        len1 = len(d)
+        cardpeek = d.deck[-1]
+        c = d.draw()
+        assert c == cardpeek
+        len2 = len(d)
+        assert len2 == len1-1
+
     num_trials = 10
     for _ in range(num_trials):
         assert d.draw() == None
