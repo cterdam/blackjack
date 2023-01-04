@@ -1,6 +1,14 @@
 from blackjack.game import Game
 from blackjack.game_config import GameConfig
 
+"""
+TODO
+
+- cut_card only appears once in the playing deck
+- initial_hand_size (int) >= 0
+- rank2value sends each of 2-K to an int
+"""
+
 
 def test_reshuffle_threshold():
 
