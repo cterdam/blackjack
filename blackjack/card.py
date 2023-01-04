@@ -74,6 +74,7 @@ class Card():
             >>> Card(Card.NUM_2, Card.SPADES)
             >>> Card(Card.QUEEN, Card.DIAMONDS)
             >>> Card(Card.LITTLE_JOKER)
+            >>> Card() # Spawns a random card
         """
 
         if rank == Card.RANDOM_FLAG:
