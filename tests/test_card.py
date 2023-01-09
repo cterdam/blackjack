@@ -208,7 +208,7 @@ def test_eq_and_hash():
 def test_random_rank():
     num_trials = 10
     for _ in range(num_trials):
-        if Card.random_rank() != Card.random_rank():
+        if Card._random_rank() != Card._random_rank():
             return
     raise AssertionError(
         f'Card.random_rank() consecutively generated {num_trials} equal pairs')
@@ -217,7 +217,7 @@ def test_random_rank():
 def test_random_suit():
     num_trials = 10
     for _ in range(num_trials):
-        if Card.random_suit() != Card.random_suit():
+        if Card._random_suit() != Card._random_suit():
             return
     raise AssertionError(
         f'Card.random_suit() consecutively generated {num_trials} equal pairs')

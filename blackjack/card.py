@@ -98,7 +98,7 @@ class Card():
                 pass
             elif suit == Card.JOKER_SUIT:
                 # Given rank, random suit
-                suit = Card.random_suit()
+                suit = Card._random_suit()
             else:
                 raise invalid_param
 
@@ -113,15 +113,15 @@ class Card():
             if suit == Card.JOKER_SUIT:
                 # Random rank, given suit
                 suit = rank
-                rank = Card.random_rank()
+                rank = Card._random_rank()
             else:
                 raise invalid_param
 
         elif rank == Card.RANDOM_FLAG:
             if suit == Card.JOKER_SUIT:
                 # Random rank, random suit
-                rank = Card.random_rank()
-                suit = Card.random_suit()
+                rank = Card._random_rank()
+                suit = Card._random_suit()
             else:
                 raise invalid_param
 
@@ -189,7 +189,7 @@ class Card():
         return hash((self.rank, self.suit))
 
     @classmethod
-    def random_rank(cls):
+    def _random_rank(cls):
         """
         Returns a random rank from Card.ranks, excluding joker ranks in
         Card.jokers.
@@ -197,7 +197,7 @@ class Card():
         return random.sample(Card.ranks, 1)[0]
 
     @classmethod
-    def random_suit(cls):
+    def _random_suit(cls):
         """
         Returns a random suit from Card.suits, excluding Card.JOKER_SUIT.
         """
