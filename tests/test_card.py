@@ -6,8 +6,10 @@ import pytest
 def test_constants():
 
     # Constants should all be different
-    assert len(set(itertools.chain(Card.suits, Card.numbers, Card.faces, Card.jokers))) == len(
-        Card.suits) + len(Card.numbers) + len(Card.faces) + len(Card.jokers)
+    randoms = (Card.RANDOM_FLAG, Card.JOKER_SUIT)
+    assert len(set(itertools.chain(Card.suits, Card.ranks, Card.jokers,
+                                   randoms))) == \
+        len(Card.suits) + len(Card.ranks) + len(Card.jokers) + len(randoms)
 
     # Ordinary ranks should be the collection of numbers, faces, and Ace
     ranks1 = set(Card.ranks)
@@ -17,42 +19,79 @@ def test_constants():
 
 def test_init_params():
 
-    # Ordinary cards
-    with pytest.raises(AssertionError):
-        # Valid rank, invalid suit
-        Card(Card.NUM_2, Card.faces)
-        Card(Card.NUM_10, Card.__repr__)
-        Card(Card.ACE, Card.ACE)
-        # Invalid rank, valid suit
-        Card(Card.faces, Card.SPADES)
-        Card(Card.DIAMONDS, Card.CLUBS)
-        Card(Card.JOKER_SUIT, Card.DIAMONDS)
-        # Invalid rank, invalid suit
-        Card(Card.CLUBS, Card.NUM_8)
-        Card(Card.suits, Card.BIG_JOKER)
-        Card(Card.HEARTS, Card.__eq__)
-    # Valid rank, valid suit
-    Card(Card.NUM_6, Card.SPADES)
-    Card(Card.ACE, Card.HEARTS)
-    Card(Card.QUEEN, Card.CLUBS)
+    # Given rank, given suit
+    c = Card(Card.NUM_6, Card.SPADES)
+    assert c.rank == Card.NUM_6
+    assert c.suit == Card.SPADES
+    c = Card(Card.ACE, Card.HEARTS)
+    assert c.rank == Card.ACE
+    assert c.suit == Card.HEARTS
+    c = Card(Card.QUEEN, Card.CLUBS)
+    assert c.rank == Card.QUEEN
+    assert c.suit == Card.CLUBS
 
-    # Joker cards
+    for r in Card.ranks:
+        for s in Card.suits:
+            c = Card(r, s)
+            assert c.rank == r
+            assert c.suit == s
+
+    # Given joker cards
+    c = Card(Card.LITTLE_JOKER)
+    assert c.rank == Card.LITTLE_JOKER and c.suit == Card.JOKER_SUIT
+    c = Card(Card.BIG_JOKER)
+    assert c.rank == Card.BIG_JOKER and c.suit == Card.JOKER_SUIT
+
+    # Given rank, random suit
+    num_trials = 15
+    ranks_to_try = {Card.NUM_3, Card.NUM_5, Card.NUM_10, Card.KING}
+    suits_collected = set()
+    for r in ranks_to_try:
+        for _ in range(num_trials):
+            c = Card(r)
+            assert c.rank == r
+            assert c.suit in Card.suits
+            suits_collected.add(c.suit)
+        assert len(suits_collected) > 2
+
+    # Random rank, given suit
+    num_trials = 15
+    suits_to_try = {Card.CLUBS, Card.DIAMONDS, Card.HEARTS, Card.SPADES}
+    ranks_collected = set()
+    for s in suits_to_try:
+        for _ in range(num_trials):
+            c = Card(s)
+            assert c.rank in Card.ranks
+            assert c.suit == s
+            ranks_collected.add(c.rank)
+        assert len(ranks_collected) > 6
+
+    # Random rank, random suit
+    num_trials = 15
+    ranks_collected = set()
+    suits_collected = set()
+    for _ in range(num_trials):
+        c = Card()
+        assert c.rank in Card.ranks
+        assert c.suit in Card.suits
+        ranks_collected.add(c.rank)
+        suits_collected.add(c.suit)
+    assert len(ranks_collected) > 6
+    assert len(suits_collected) > 2
+
+    # Illegal params
     with pytest.raises(AssertionError):
-        # Valid rank, invalid suit
-        Card(Card.LITTLE_JOKER, Card.SPADES)
-        Card(Card.BIG_JOKER, Card.__doc__)
-        Card(Card.BIG_JOKER, Card.numbers)
-        # Invalid rank, valid suit
-        Card(Card.SPADES, Card.JOKER_SUIT)
-        Card(Card.NUM_3)
-        Card(Card.JACK, Card.JOKER_SUIT)
-        # Invalid rank, invalid suit
-        Card(Card.jokers, Card.suits)
-        Card(Card.__str__, Card.NUM_5)
-        Card(Card.JOKER_SUIT, Card.BIG_JOKER)
-    # Valid rank, valid suit
-    Card(Card.BIG_JOKER, Card.JOKER_SUIT)
-    Card(Card.LITTLE_JOKER)
+        Card(Card.NUM_2, Card.RANDOM_FLAG)
+    with pytest.raises(AssertionError):
+        Card(Card.NUM_7, Card.NUM_9)
+    with pytest.raises(AssertionError):
+        Card(Card.LITTLE_JOKER, Card.NUM_10)
+    with pytest.raises(AssertionError):
+        Card(Card.HEARTS, Card.SPADES)
+    with pytest.raises(AssertionError):
+        Card(Card.JOKER_SUIT, Card.RANDOM_FLAG)
+    with pytest.raises(AssertionError):
+        Card(Card.JOKER_SUIT, Card.JOKER_SUIT)
 
 
 def test_is_ace():
@@ -61,11 +100,13 @@ def test_is_ace():
     assert Card(Card.ACE, Card.SPADES).is_ace
     assert Card(Card.ACE, Card.DIAMONDS).is_ace
     assert Card(Card.ACE, Card.HEARTS).is_ace
+    assert Card(Card.ACE).is_ace
 
     # These are not aces
     assert not Card(Card.NUM_3, Card.CLUBS).is_ace
     assert not Card(Card.KING, Card.DIAMONDS).is_ace
     assert not Card(Card.LITTLE_JOKER).is_ace
+    assert not Card(Card.NUM_8).is_ace
 
 
 def test_is_number():
@@ -74,11 +115,13 @@ def test_is_number():
     assert Card(Card.NUM_2, Card.CLUBS).is_number
     assert Card(Card.NUM_3, Card.HEARTS).is_number
     assert Card(Card.NUM_10, Card.SPADES).is_number
+    assert Card(Card.NUM_5).is_number
 
     # These are not numbers
     assert not Card(Card.JACK, Card.DIAMONDS).is_number
     assert not Card(Card.ACE, Card.HEARTS).is_number
     assert not Card(Card.BIG_JOKER).is_number
+    assert not Card(Card.QUEEN).is_number
 
 
 def test_is_face():
@@ -86,12 +129,13 @@ def test_is_face():
     # These are faces
     assert Card(Card.JACK, Card.HEARTS).is_face
     assert Card(Card.QUEEN, Card.DIAMONDS).is_face
-    assert Card(Card.KING, Card.CLUBS).is_face
+    assert Card(Card.KING).is_face
 
     # These are not faces
     assert not Card(Card.ACE, Card.SPADES).is_face
     assert not Card(Card.NUM_4, Card.HEARTS).is_face
     assert not Card(Card.LITTLE_JOKER).is_face
+    assert not Card(Card.NUM_9).is_face
 
 
 def test_is_joker():
@@ -104,6 +148,7 @@ def test_is_joker():
     assert not Card(Card.ACE, Card.DIAMONDS).is_joker
     assert not Card(Card.NUM_8, Card.HEARTS).is_joker
     assert not Card(Card.QUEEN, Card.HEARTS).is_joker
+    assert not Card(Card.JACK).is_joker
 
 
 def test_str():
@@ -160,19 +205,28 @@ def test_eq_and_hash():
     assert Card(Card.LITTLE_JOKER) != None
 
 
-def test_random_init():
+def test_random_rank():
+    num_trials = 10
+    for _ in range(num_trials):
+        if Card.random_rank() != Card.random_rank():
+            return
+    raise AssertionError(
+        f'Card.random_rank() consecutively generated {num_trials} equal pairs')
+
+
+def test_random_suit():
+    num_trials = 10
+    for _ in range(num_trials):
+        if Card.random_suit() != Card.random_suit():
+            return
+    raise AssertionError(
+        f'Card.random_suit() consecutively generated {num_trials} equal pairs')
+
+
+def test_random_generation():
     num_trials = 10
     for _ in range(num_trials):
         if Card() != Card():
             return
     raise AssertionError(
         f'Card() consecutively generated {num_trials} equal pairs')
-
-
-def test_random():
-    num_trials = 10
-    for _ in range(num_trials):
-        if Card.random() != Card.random():
-            return
-    raise AssertionError(
-        f'Card.random() consecutively generated {num_trials} equal pairs')
