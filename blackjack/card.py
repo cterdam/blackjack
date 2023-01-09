@@ -10,7 +10,6 @@ class Card():
     DIAMONDS = 'Diamonds'
     HEARTS = 'Hearts'
     SPADES = 'Spades'
-    JOKER_SUIT = None
 
     # Numbers
     NUM_2 = '2'
@@ -37,6 +36,7 @@ class Card():
 
     # Flag for initializing a random card
     RANDOM_FLAG = 'Random Flag'
+    JOKER_SUIT = 'Joker Suit'
 
     # Collections
     suits = (CLUBS, DIAMONDS, HEARTS, SPADES)
@@ -67,28 +67,66 @@ class Card():
 
         Params: rank, suit.
         Req: either (rank in Card.ranks and suit in Card.suits)
+                -> given rank, given suit
              or     (rank in Card.jokers and suit == Card.JOKER_SUIT)
+                -> given joker rank, joker suit
+             or     (rank in Card.ranks and suit == Card.JOKER_SUIT)
+                -> given rank, random suit
+             or     (rank in Card.suits and suit == Card.JOKER_SUIT)
+                -> random rank, given suit
+             or     (rank == Card.RANDOM_FLAG and suit == Card.JOKER_SUIT)
+                -> random rank, random suit (excluding jokers)
 
         Examples:
             >>> from blackjack.card import Card
-            >>> Card(Card.NUM_2, Card.SPADES)
-            >>> Card(Card.QUEEN, Card.DIAMONDS)
-            >>> Card(Card.LITTLE_JOKER)
-            >>> Card() # Spawns a random card
+
+            >>> Card(Card.NUM_2, Card.SPADES)   # Spawns 2 of Spades
+            >>> Card(Card.QUEEN, Card.DIAMONDS) # Spawns Queen of Diamonds
+            >>> Card(Card.LITTLE_JOKER)         # Spawns Little Joker
+
+            >>> Card(Card.NUM_6)  # Spawns a 6 with a random suit
+            >>> Card(Card.HEARTS) # Spawns a Hearts card with a random rank
+            >>> Card()            # Spawns a random card excluding jokers
         """
 
-        if rank == Card.RANDOM_FLAG:
-            target = Card.random()
-            suit, rank = target.suit, target.rank
+        # Initialization param check
+        invalid_param = AssertionError('Invalid initialization parameters.')
 
-        if not (rank in Card.ranks and suit in Card.suits) and\
-                not (rank in Card.jokers and suit == Card.JOKER_SUIT):
-            raise AssertionError('Invalid initialization parameters. For '
-                                 'ordinary cards, rank must be in Card.ranks '
-                                 'and suit must be in Card.suits. For joker '
-                                 'cards, rank must be in Card.jokers and suit '
-                                 f'must be None. Got rank = {rank} and suit = '
-                                 f'{suit}.')
+        if rank in Card.ranks:
+            if suit in Card.suits:
+                # Given rank, given suit
+                pass
+            elif suit == Card.JOKER_SUIT:
+                # Given rank, random suit
+                suit = Card.random_suit()
+            else:
+                raise invalid_param
+
+        elif rank in Card.jokers:
+            if suit == Card.JOKER_SUIT:
+                # Given joker card
+                pass
+            else:
+                raise invalid_param
+
+        elif rank in Card.suits:
+            if suit == Card.JOKER_SUIT:
+                # Random rank, given suit
+                suit = rank
+                rank = Card.random_rank()
+            else:
+                raise invalid_param
+
+        elif rank == Card.RANDOM_FLAG:
+            if suit == Card.JOKER_SUIT:
+                # Random rank, random suit
+                rank = Card.random_rank()
+                suit = Card.random_suit()
+            else:
+                raise invalid_param
+
+        else:
+            raise invalid_param
 
         self.rank = rank
         self.suit = suit
@@ -151,20 +189,16 @@ class Card():
         return hash((self.rank, self.suit))
 
     @classmethod
-    def random(cls, include_joker=False):
+    def random_rank(cls):
         """
-        Returns a random card. This is not the same as returning a random
-        member of a playing deck. Running this function n times, across all
-        trials the distribution of all possible outcomes is the same.
+        Returns a random rank from Card.ranks, excluding joker ranks in
+        Card.jokers.
         """
-        if include_joker:
-            rank = random.sample(Card.ranks+Card.jokers, 1)[0]
-            if rank in Card.ranks:
-                suit = random.sample(Card.suits, 1)[0]
-            else:
-                suit = Card.JOKER_SUIT
-            return Card(rank, suit)
-        else:
-            rank = random.sample(Card.ranks, 1)[0]
-            suit = random.sample(Card.suits, 1)[0]
-            return Card(rank, suit)
+        return random.sample(Card.ranks, 1)[0]
+
+    @classmethod
+    def random_suit(cls):
+        """
+        Returns a random suit from Card.suits, excluding Card.JOKER_SUIT.
+        """
+        return random.sample(Card.suits, 1)[0]
