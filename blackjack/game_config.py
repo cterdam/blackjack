@@ -14,7 +14,7 @@ class GameConfig():
         Params:
 
             num_decks (int): Number of full decks to include in this game.
-                Req: num_decks > 1
+                Req: num_decks > 0
 
             reshuffle_threshold (int or float): A special cut card will be
                 inserted at this proportion in the playing deck. If the cut
@@ -56,23 +56,17 @@ class GameConfig():
                 Req: None
         """
 
-        if type(num_decks) is not int or num_decks < 1:
-            raise AssertionError('num_decks must be a positive integer')
-        if type(reshuffle_threshold) not in (int, float) or\
-                not (0 <= reshuffle_threshold <= 1):
-            raise AssertionError(
-                'reshuffle_threshold must be int or float with value between'
-                '0 and 1 (inclusive)')
-        if type(double_after_split) is not bool:
-            raise AssertionError('double_after_split must be a boolean')
-        if type(max_hands) is not int or max_hands < 1:
-            raise AssertionError('max_hands must be a positive integer')
-        if type(normal_pay) not in (int, float):
-            raise AssertionError('normal_pay must be int or float')
-        if type(blackjack_pay) not in (int, float):
-            raise AssertionError('blackjack_pay must be int or float')
-        if type(natural_blackjack_only) is not bool:
-            raise AssertionError('natural_blackjack_only must be a boolean')
+        # Init param check
+        assert type(num_decks) is int
+        assert num_decks > 0
+        assert type(reshuffle_threshold) in (int, float)
+        assert 0 <= reshuffle_threshold <= 1
+        assert type(double_after_split) is bool
+        assert type(max_hands) is int
+        assert max_hands > 0
+        assert type(normal_pay) in (int, float)
+        assert type(blackjack_pay) in (int, float)
+        assert type(natural_blackjack_only) is bool
 
         self.num_decks = num_decks
         self.reshuffle_threshold = reshuffle_threshold

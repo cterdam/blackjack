@@ -21,12 +21,11 @@ class Deck():
                 Req: None
         """
 
-        if type(num_full_decks) is not int or num_full_decks < 1:
-            raise AssertionError('num_full_decks must be a positive integer')
-        if type(include_joker) is not bool:
-            raise AssertionError('include_joker must be a boolean')
-        if type(ordered) is not bool:
-            raise AssertionError('ordered must be a boolean')
+        # Init param check
+        assert type(num_full_decks) is int
+        assert num_full_decks > 0
+        assert type(include_joker) is bool
+        assert type(ordered) is bool
 
         def get_single_deck(include_joker):
             result = [Card(rank, suit)
