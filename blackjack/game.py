@@ -33,16 +33,22 @@ class Game():
         """
 
         self.config = game_config
-        self.deck = self._prepare_deck(self.config)
+        self.deck = Game._prepare_deck(self.config.num_decks,
+                                       self.config.reshuffle_threshold)
 
-    def _prepare_deck(self, config):
+    @classmethod
+    def _prepare_deck(cls, num_decks, reshuffle_threshold):
         """
         Prepares a fresh deck of cards in self.deck
 
         Params:
-            config (GameConfig): Config for a game.
-                Req: None
+            num_decks (int): Number of full decks to include in the play deck.
+                Req: num_decks > 0
+
+            reshuffle_threshold (int or float): The threshold at which to
+                insert the special cut card signaling the time to reshuffle.
+                Req: 0 <= reshuffle_threshold <= 1
         """
-        d = Deck(num_full_decks=config.num_decks)
-        d.insert(int(config.reshuffle_threshold * len(d)), Game.cut_card)
+        d = Deck(num_full_decks=num_decks)
+        d.insert(int(reshuffle_threshold * len(d)), Game.cut_card)
         return d
