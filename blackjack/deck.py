@@ -21,10 +21,13 @@ class Deck():
                 Req: None
         """
 
-        # Init param check
+        """ Init param check """
+        # num_full_decks should be positive int
         assert type(num_full_decks) is int
         assert num_full_decks > 0
+        # include_joker should be boolean
         assert type(include_joker) is bool
+        # ordered should be boolean
         assert type(ordered) is bool
 
         def get_single_deck(include_joker):

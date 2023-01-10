@@ -89,7 +89,7 @@ class Card():
             >>> Card()            # Spawns a random card excluding jokers
         """
 
-        # Initialization param check
+        """ Init param check """
         invalid_param = AssertionError('Invalid initialization parameters.')
 
         if rank in Card.ranks:

@@ -21,7 +21,7 @@ class Hand():
                 Req: None
         """
 
-        # Init param check
+        """ Init param check """
         h_wrong = False
         if not isinstance(h, list):
             h_wrong = True

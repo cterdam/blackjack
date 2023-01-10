@@ -56,16 +56,23 @@ class GameConfig():
                 Req: None
         """
 
-        # Init param check
+        """ Init param check """
+        # num_decks should be positive int
         assert type(num_decks) is int
         assert num_decks > 0
+        # reshuffle_threshold should be int or float within 0 and 1 (inclusive)
         assert type(reshuffle_threshold) in (int, float)
         assert 0 <= reshuffle_threshold <= 1
+        # double_after_split should be bool
         assert type(double_after_split) is bool
+        # max_hands should be positive int
         assert type(max_hands) is int
         assert max_hands > 0
+        # normal_pay should be int or float
         assert type(normal_pay) in (int, float)
+        # blackjack_pay should be int or float
         assert type(blackjack_pay) in (int, float)
+        # natural_blackjack_only should be int or float
         assert type(natural_blackjack_only) is bool
 
         self.num_decks = num_decks
