@@ -33,11 +33,13 @@ class Hand():
             raise AssertionError('initialization of a hand requires a list of '
                                  'cards that can be empty.')
 
-        self.hand = h
+        self.hand = h.copy()
         num_aces, hard_total = Hand._breakdown(self.hand)
+
         self.num_aces = num_aces
         self.hard_total = hard_total
         self.total = Hand._calc_total(num_aces, hard_total)
+        self.uniform_value = Hand._get_uniform_value(self.hand)
 
     @classmethod
     def _breakdown(cls, h):
@@ -93,3 +95,65 @@ class Hand():
         else:
             # Hard total, all aces count as 1
             return (Hand.HARD, less_one_ace + 1)
+
+    @classmethod
+    def _get_uniform_value(cls, h):
+        """
+        Determine if the list contains some cards of the same rank value.
+
+        Params:
+            h (list of Card): list of cards to survey.
+                Req: None
+
+        Returns:
+            if h contains at lease one card and all cards in the list are the
+                same rank
+                -> rank, where
+                    - rank in Card.ranks
+                    - rank is the common rank of all cards in h
+            else (if h is empty, or if at least two cards differ in rank)
+                -> None
+        """
+        ranks = {c.rank for c in h}
+        if len(ranks) == 1:
+            return h[0].rank
+        else:
+            return None
+
+    def add(self, newcard):
+        """
+        Add a new card into this hand.
+
+        Params:
+            newcard (Card): The new card to input.
+                Req: None
+
+        Returns:
+            self (Hand) after adding the card and updating data.
+        """
+        self.hand.append(newcard)
+        if newcard.is_ace:
+            self.num_aces += 1
+        else:
+            self.hard_total += Game.rank2value[newcard.rank]
+        self.total = Hand._calc_total(self.num_aces, self.hard_total)
+        if self.uniform_value != None:
+            if newcard.rank != self.uniform_value:
+                self.uniform_value = None
+        else:
+            if len(self.hand) == 1:
+                self.uniform_value = self.hand[0].rank
+
+        return self
+
+    def __eq__(self, other):
+        """
+        Two hands are equal when they are equal in num_aces, hard_total,
+        total, and uniform_value.
+        """
+        if not isinstance(other, Hand):
+            return False
+        return self.num_aces == other.num_aces\
+            and self.hard_total == other.hard_total\
+            and self.total == other.total\
+            and self.uniform_value == other.uniform_value
