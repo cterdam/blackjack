@@ -157,3 +157,30 @@ class Hand():
             and self.hard_total == other.hard_total\
             and self.total == other.total\
             and self.uniform_value == other.uniform_value
+
+    def __str__(self):
+        """
+        Short string representation of the hand.
+        """
+        return f'Hand of {len(self.hand)} cards'
+
+    def __repr__(self):
+        """
+        Long string representation of the hand.
+
+        Returns (str):
+            Examples:
+                -> 'Hand [ ♥9 ♠K ♠2 ♣4 ]'
+                -> 'Hand [ ♠K ♠2 ♣4 ]'
+                -> 'Hand [ ♠2 ♣4 ]'
+                -> 'Hand [ ♣4 ]'
+                -> 'Hand [ ]'
+            In each case the cards are shown in the same order as the hand,
+            where the furthest left card is first in the hand.
+        """
+        target = 'Hand [ '
+        for c in self.hand:
+            target += str(c)
+            target += ' '
+        target += ']'
+        return target

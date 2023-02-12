@@ -112,3 +112,15 @@ def test_add():
     assert Hand(AA).add(Card(Card.NUM_6)).add(Card(Card.NUM_4)) == Hand(AA64)
     assert Hand(AA).add(Card(Card.ACE)) == Hand(AAA)
     assert Hand(AAA).add(Card(Card.JACK)) == Hand(AAAJ)
+
+
+def test_str_and_repr():
+    for handlist in handlists:
+        hand = Hand(handlist)
+        assert str(hand) == f'Hand of {len(handlist)} cards'
+        r = repr(hand)
+        assert r[0:7] == "Hand [ "
+        assert r[-1] == "]"
+        assert len(r) == 3 * len(handlist) + 8
+        for i, s in enumerate(handlist):
+            assert r[3*i+7:3*i+10] == str(s) + " "
