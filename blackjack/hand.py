@@ -145,6 +145,21 @@ class Hand():
                 self.uniform_value = self.hand[0].rank
 
         return self
+    
+    def explode(h):
+        """
+        Creates a separate hand for each card in the current hand. 
+
+        Params:
+            h (list of Card): list of cards to survey.
+                Req: None
+
+        Returns:
+            A list of hand objects, where each contains a single card 
+            from the original hand. 
+        """
+        
+        return [Hand([c]) for c in h] 
 
     def __eq__(self, other):
         """

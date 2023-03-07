@@ -111,8 +111,30 @@ def test_add():
     assert Hand(AA).add(Card(Card.NUM_3)) == Hand(AA3)
     assert Hand(AA).add(Card(Card.NUM_6)).add(Card(Card.NUM_4)) == Hand(AA64)
     assert Hand(AA).add(Card(Card.ACE)) == Hand(AAA)
-    assert Hand(AAA).add(Card(Card.JACK)) == Hand(AAAJ)
+    assert Hand(AAbA).add(Card(Card.JACK)) == Hand(AAAJ)
 
+def test_explode(): 
+    h = Hand([Card("Hearts", "Ace"), Card("Clubs", "Queen"), Card("Diamonds", "10")])
+    exploded_hands = h.explode()
+    assert len(exploded_hands) == 3
+    assert exploded_hands[0] == Hand([Card("Hearts", "Ace")])
+    assert exploded_hands[1] == Hand([Card("Clubs", "Queen")])
+    assert exploded_hands[2] == Hand([Card("Diamonds", "10")])
+
+    h2 = Hand([Card("Spades", "King"), Card("Hearts", "2")])
+    exploded_hands2 = h2.explode()
+    assert len(exploded_hands2) == 2
+    assert exploded_hands2[0] == Hand([Card("Spades", "King")])
+    assert exploded_hands2[1] == Hand([Card("Hearts", "2")])
+    
+    h3 = Hand([Card("Clubs", "7")])
+    exploded_hands3 = h3.explode()
+    assert len(exploded_hands3) == 1
+    assert exploded_hands3[0] == Hand([Card("Clubs", "7")])
+
+    h4 = Hand([])
+    exploded_hands4 = h4.explode()
+    assert len(exploded_hands4) == 0
 
 def test_str_and_repr():
     for handlist in handlists:
