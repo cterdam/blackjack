@@ -158,7 +158,6 @@ class Hand():
             A list of hand objects, where each contains a single card 
             from the original hand. 
         """
-        
         return [Hand([c]) for c in h] 
 
     def __eq__(self, other):
