@@ -37,7 +37,8 @@ class Player(ABC):
             Inv: bet >= 0
 
         Side Effects:
-            Subtracts the bet amount from the player's bankroll.
+            -> Subtracts the bet amount from the player's bankroll.
+            -> Initialize the hand list the player will play with this round.
         """
         pass
 
@@ -55,13 +56,33 @@ class Player(ABC):
         pass
 
     @abstractmethod
-    def start_hand(self, hand):
+    def has_hand(self):
         """
-        Gives the player a hand to play with.
+        Determines whether the player is looking at a meaningful hand.
 
-        Params:
-            hand (Hand): The hand the player will play with.
-            Req: None
+        Returns (bool):
+            -> True if the player has a hand they are currently focusing on.
+            -> False otherwise.
+        """
+        pass
+
+    @abstractmethod
+    def curr_hand(self):
+        """
+        Returns the hand object the player is current focusing on.
+
+        Returns (Hand):
+            The hand the player is currently playing with.
+        """
+        pass
+
+    @abstractmethod
+    def next_hand(self):
+        """
+        Notifies the player to switch to focusing on their next hand.
+
+        Side Effects:
+            -> Player switches to focus on next hand, if one exists
         """
         pass
 
