@@ -34,7 +34,7 @@ class Player(ABC):
 
         Returns (int):
             bet -> The amount the player is betting.
-            Inv: bet >= 0
+            Inv: 0 <= bet <= bankroll, where bankroll is the player's bankroll
 
         Side Effects:
             -> Subtracts the bet amount from the player's bankroll.
@@ -139,16 +139,20 @@ class Player(ABC):
         pass
 
     @abstractmethod
-    def payout(self, payout):
+    def payout(self, payouts):
         """
-        Gives the player a payout for their current hand.
+        Gives the player payouts for their current hands.
 
         Params:
-            payout (int): The amount to pay out to the player.
-                Req: payout >= 0
+            payouts (int list or float list): The amount to pay out to 
+            the player for each hand.
+                Req: 
+                    -> len(payouts) is the number of hands the player is playing
+                        with
+                    -> payouts[i] >= 0 for all 0 <= i < len(payouts)
 
         Side Effects:
-            -> Adds the payout to the player's bankroll.
+            -> Adds each payout to the player's bankroll.
         """
         pass
 
