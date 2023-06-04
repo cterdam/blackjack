@@ -4,17 +4,9 @@ from blackjack.game_config import GameConfig
 
 
 def test_constants():
-
     # Cut card should only appear once in the play deck
     g = Game(GameConfig())
     assert g.deck.deck.count(Game.cut_card) == 1
-
-    # Blackjack value should be int or float
-    assert type(Game.blackjack_value) in (int, float)
-
-    # Initial hand size should be nonnegative int
-    assert type(Game.initial_hand_size) is int
-    assert Game.initial_hand_size >= 0
 
     # rank2value should send each of 2-K to int or float
     for r in (Card.numbers + Card.faces):

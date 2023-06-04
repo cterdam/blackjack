@@ -107,3 +107,95 @@ def test_init_params():
         GameConfig(natural_blackjack_only=(False))
     GameConfig(natural_blackjack_only=True)
     GameConfig(natural_blackjack_only=False)
+
+    # min_bet must be non-negative int or float
+    with pytest.raises(AssertionError):
+        GameConfig(min_bet=None)
+        GameConfig(min_bet=True)
+        GameConfig(min_bet=[0.2])
+        GameConfig(min_bet=(0.3))
+        GameConfig(min_bet='0.4')
+        GameConfig(min_bet='0')
+    GameConfig(min_bet=0)
+    GameConfig(min_bet=0.25)
+    GameConfig(min_bet=0.33)
+    GameConfig(min_bet=0.5)
+    GameConfig(min_bet=1)
+    GameConfig(min_bet=3/2)
+    GameConfig(min_bet=2)
+    GameConfig(min_bet=3.14)
+
+    # max_bet must be non-negative int or float
+    with pytest.raises(AssertionError):
+        GameConfig(max_bet=None)
+        GameConfig(max_bet=True)
+        GameConfig(max_bet=[0.2])
+        GameConfig(max_bet=(0.3))
+        GameConfig(max_bet='0.4')
+        GameConfig(max_bet='0')
+    GameConfig(max_bet=0)
+    GameConfig(max_bet=0.25)
+    GameConfig(max_bet=0.33)
+    GameConfig(max_bet=0.5)
+    GameConfig(max_bet=1)
+    GameConfig(max_bet=3/2)
+    GameConfig(max_bet=2)
+    GameConfig(max_bet=3.14)
+
+    # int_bet_only must be a boolean
+    with pytest.raises(AssertionError):
+        GameConfig(int_bet_only='True')
+        GameConfig(int_bet_only=None)
+        GameConfig(int_bet_only=0)
+        GameConfig(int_bet_only=[False])
+        GameConfig(int_bet_only=(False))
+    GameConfig(int_bet_only=True)
+    GameConfig(int_bet_only=False)
+
+    # blackjack_value must be positive int
+    with pytest.raises(AssertionError):
+        GameConfig(blackjack_value=None)
+        GameConfig(blackjack_value=True)
+        GameConfig(blackjack_value=[2])
+        GameConfig(blackjack_value=(3))
+        GameConfig(blackjack_value='4')
+        GameConfig(blackjack_value='0')
+        GameConfig(blackjack_value=-1)
+        GameConfig(blackjack_value=-0.5)
+        GameConfig(blackjack_value=0)
+        GameConfig(blackjack_value=0.5)
+    GameConfig(blackjack_value=1)
+    GameConfig(blackjack_value=2)
+    GameConfig(blackjack_value=10)
+
+    # max_turns must be positive int
+    with pytest.raises(AssertionError):
+        GameConfig(max_turns=None)
+        GameConfig(max_turns=True)
+        GameConfig(max_turns=[2])
+        GameConfig(max_turns=(3))
+        GameConfig(max_turns='4')
+        GameConfig(max_turns='0')
+        GameConfig(max_turns=-1)
+        GameConfig(max_turns=-0.5)
+        GameConfig(max_turns=0)
+        GameConfig(max_turns=0.5)
+    GameConfig(max_turns=1)
+    GameConfig(max_turns=2)
+    GameConfig(max_turns=10)
+
+    # init_hand_size must be non-negative int
+    with pytest.raises(AssertionError):
+        GameConfig(init_hand_size=None)
+        GameConfig(init_hand_size=True)
+        GameConfig(init_hand_size=[2])
+        GameConfig(init_hand_size=(3))
+        GameConfig(init_hand_size='4')
+        GameConfig(init_hand_size='0')
+        GameConfig(init_hand_size=-1)
+        GameConfig(init_hand_size=-0.5)
+        GameConfig(init_hand_size=0.5)
+    GameConfig(init_hand_size=0)
+    GameConfig(init_hand_size=1)
+    GameConfig(init_hand_size=2)
+    GameConfig(init_hand_size=10)
