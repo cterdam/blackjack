@@ -12,7 +12,7 @@ class GameConfig:
         max_bet=float("inf"),
         int_bet_only=True,
         blackjack_value=21,
-        max_turns=1,
+        max_turns=300,
         init_hand_size=2,
     ):
         """
