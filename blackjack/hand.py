@@ -30,7 +30,7 @@ class Hand():
                 if not isinstance(c, Card):
                     h_wrong = True
         if h_wrong:
-            raise AssertionError('initialization of a hand requires a list of '
+            raise AssertionError('Initialization of a hand requires a list of '
                                  'cards that can be empty.')
 
         self.hand = h.copy()
@@ -60,7 +60,7 @@ class Hand():
         num_aces = 0
         hard_total = 0
         for c in h:
-            if c.is_ace:
+            if c.is_ace():
                 num_aces += 1
             else:
                 hard_total += Game.rank2value[c.rank]
@@ -132,7 +132,7 @@ class Hand():
             self (Hand) after adding the card and updating data.
         """
         self.hand.append(newcard)
-        if newcard.is_ace:
+        if newcard.is_ace():
             self.num_aces += 1
         else:
             self.hard_total += Game.rank2value[newcard.rank]

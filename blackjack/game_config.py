@@ -1,10 +1,14 @@
 class GameConfig:
+
     def __init__(
         self,
         num_decks=8,
         reshuffle_threshold=0.25,
         double_after_split=True,
         max_hands=4,
+        early_surrender=False,
+        insurance=True,
+        late_surrender=True,
         normal_pay=1,
         blackjack_pay=3 / 2,
         natural_blackjack_only=True,
@@ -18,10 +22,9 @@ class GameConfig:
         """
         Config for a Blackjack game.
 
-        TODO: early surrender, late surrender, insurance
-
         TODO (extra): card valuation, num of cards for each hit,
-            num of cards for each double, amount of bet for double
+            num of cards for each double, amount of bet for double, amount of
+            bet for split, and amount of payout for surrender
 
         Params:
 
@@ -45,6 +48,17 @@ class GameConfig:
                 round by splitting. For example a value of 4 means a player
                 can split at most 3 times in a round.
                 Req: max_hands > 0
+
+            early_surrender (bool): Whether a player is allowed to surrender
+                before the dealer checks for Blackjack.
+                Req: None
+
+            insurance (bool): Whether a player is allowed to make the side bet
+                for dealer Blackjack if the dealer upcard is Ace. The player
+                is not allowed to make side bets if already surrendered early.
+
+            late_surrender (bool): Whether a player is allowed to surrender
+                after the dealer checks for Blackjack.
 
             normal_pay (int or float): The ratio of pay to player for a
                 normal winning hand that is not blackjack. The player will
@@ -93,45 +107,72 @@ class GameConfig:
         """
 
         """ Init param check """
+
         # num_decks should be positive int
         assert type(num_decks) is int
         assert num_decks > 0
+
         # reshuffle_threshold should be int or float within 0 and 1 (inclusive)
         assert type(reshuffle_threshold) in (int, float)
         assert 0 <= reshuffle_threshold <= 1
+
         # double_after_split should be bool
         assert type(double_after_split) is bool
+
         # max_hands should be positive int
         assert type(max_hands) is int
         assert max_hands > 0
+
+        # early_surrender should be bool
+        assert type(early_surrender) is bool
+
+        # insurance should be bool
+        assert type(insurance) is bool
+
+        # late_surrender should be bool
+        assert type(late_surrender) is bool
+
         # normal_pay should be int or float
         assert type(normal_pay) in (int, float)
+
         # blackjack_pay should be int or float
         assert type(blackjack_pay) in (int, float)
+
         # natural_blackjack_only should be int or float
         assert type(natural_blackjack_only) is bool
+
         # min_bet should be non-negative int or float
         assert type(min_bet) in (int, float)
         assert min_bet >= 0
+
         # max_bet should be non-negative int or float
         assert type(max_bet) in (int, float)
         assert max_bet >= 0
+
         # int_bet_only should be bool
         assert type(int_bet_only) is bool
+
         # blackjack_value should be positive int
         assert type(blackjack_value) is int
         assert blackjack_value > 0
+
         # max_turns should be positive int
         assert type(max_turns) is int
         assert max_turns > 0
+
         # init_hand_size should be non-negative int
         assert type(init_hand_size) is int
         assert init_hand_size >= 0
+
+        """ Store values """
 
         self.num_decks = num_decks
         self.reshuffle_threshold = reshuffle_threshold
         self.double_after_split = double_after_split
         self.max_hands = max_hands
+        self.early_surrender = early_surrender
+        self.insurance = insurance
+        self.late_surrender = late_surrender
         self.normal_pay = normal_pay
         self.blackjack_pay = blackjack_pay
         self.natural_blackjack_only = natural_blackjack_only
