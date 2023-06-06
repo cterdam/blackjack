@@ -133,7 +133,7 @@ class ThresholdPlayer(Player):
             return False
         if not isinstance(self._hand_index, int):
             return False
-        if self._hand_index < 0 or self._hand_index >= len(self._hands): 
+        if self._hand_index < 0 or self._hand_index >= len(self._hands):
             return False
         if not isinstance(self._hands[self._hand_index], Hand):
             return False
@@ -257,21 +257,21 @@ class ThresholdPlayer(Player):
         Params:
             payout (int or float): The amount to payout to the player.
                 Req: payout >= 0
-        
+
         Side Effects:
             -> Adds payout to the player's bankroll.
             -> Reset's the player's hand.
         """
         if not isinstance(self._hands, list):
-            raise AssertionError("Cannot payout a Player before they begin a round")
+            raise AssertionError(
+                "Cannot payout a Player before they begin a round")
         if type(payout) not in (int, float) or payout < 0:
             raise AssertionError("Invalid parameters.")
-        
+
         self.bankroll += payout
         self._hands = None
         self._hand_index = None
 
-        
     def final_payout(self, payouts):
         """
         Gives the player payouts for their current hands, and ends the round
@@ -291,7 +291,8 @@ class ThresholdPlayer(Player):
 
         """ Param Check """
         if not isinstance(self._hands, list):
-            raise AssertionError("Cannot payout a Player before they begin a round")
+            raise AssertionError(
+                "Cannot payout a Player before they begin a round")
         if not isinstance(payouts, list):
             raise AssertionError("Invalid parameters.")
         if len(payouts) != len(self._hands):

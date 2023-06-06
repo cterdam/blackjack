@@ -6,6 +6,7 @@ from blackjack.hand import Hand
 from blackjack.player import Player
 from blackjack.players.threshold_player import ThresholdPlayer
 
+
 def test_init_params():
 
     # name must be string
@@ -56,7 +57,8 @@ def test_init_params():
     # Test various instantiations
     threshold1 = ThresholdPlayer()
     threshold2 = ThresholdPlayer(name="Bob", hard_threshold=0)
-    threshold3 = ThresholdPlayer(name="a", bankroll=2.5, hard_threshold=12, soft_threshold=26, bet=3.14)
+    threshold3 = ThresholdPlayer(
+        name="a", bankroll=2.5, hard_threshold=12, soft_threshold=26, bet=3.14)
 
     for t in [threshold1, threshold2, threshold3]:
         assert type(t.name) is str
@@ -79,6 +81,7 @@ def test_init_params():
     assert threshold3.hard_threshold == 12
     assert threshold3.soft_threshold == 26
     assert threshold3.bet == 3.14
+
 
 def test_sit_down():
 
@@ -105,6 +108,7 @@ def test_sit_down():
     assert t._hands == None
     assert t._hand_index == None
 
+
 def test_place_bet():
 
     def initialized_hands(t):
@@ -112,14 +116,14 @@ def test_place_bet():
         assert len(t._hands) == 1
         assert type(t._hand_index) is int
         assert t._hand_index == 0
-        assert type(t._hands[t._hand_index]) is Hand 
+        assert type(t._hands[t._hand_index]) is Hand
         assert t._hands[t._hand_index].hand == []
-        
+
     # Test Illegal Calls
     t = ThresholdPlayer()
     with pytest.raises(AssertionError):
         t.place_bet()
-    
+
     # Test Updating Bankroll and Hands
     t1 = ThresholdPlayer(bankroll=100, bet=5)
     gc_int_bet = GameConfig(int_bet_only=True)
@@ -151,14 +155,15 @@ def test_place_bet():
     assert round(t3.bankroll, 5) == 2.8
     initialized_hands(t3)
 
+
 def test_observe_card():
-    
+
     # Test Illegal Params
     t = ThresholdPlayer()
     c = Card()
     with pytest.raises(AssertionError):
-        t.observe_card(c,1)
-    
+        t.observe_card(c, 1)
+
     t.sit_down(GameConfig())
 
     # card must be of type Card
@@ -172,12 +177,13 @@ def test_observe_card():
     def invalid_player(player):
         with pytest.raises(AssertionError):
             t.observe_card(c, player)
-    
+
     t.observe_card(c, 1)
     t.observe_card(c, 0)
 
+
 def test_has_hand():
-    
+
     # Test Normal Game Loop
     t = ThresholdPlayer()
     gc = GameConfig()
@@ -206,9 +212,8 @@ def test_has_hand():
     assert t.has_hand() == False
 
 
-
 def test_cur_hand():
-    
+
     # Test Normal Game Loop
     t = ThresholdPlayer()
     gc = GameConfig()
@@ -234,8 +239,9 @@ def test_cur_hand():
     t.next_hand()
     assert t.curr_hand() == None
 
+
 def test_next_hand():
-    
+
     # Test Normal Game Loop
     t = ThresholdPlayer()
     gc = GameConfig()
@@ -248,14 +254,15 @@ def test_next_hand():
     t.next_hand()
     assert t._hand_index == 1
     k = 547
-    for i in range(1,k):
+    for i in range(1, k):
         t.next_hand()
         assert t._hand_index == 1 + i
     t.final_payout([0])
     assert t._hand_index == None
 
+
 def test_insurance():
-    
+
     # Test Invalid Calls
     t = ThresholdPlayer(bankroll=5, bet=1)
     gc = GameConfig(int_bet_only=False)
@@ -268,7 +275,7 @@ def test_insurance():
         t.decide_insurance()
     with pytest.raises(AssertionError):
         t.insurance_payout(3)
-    
+
     # Test Decide Insurance
     t.place_bet()
     assert t.decide_insurance() == False
@@ -299,22 +306,24 @@ def test_insurance():
     assert t._hands == None
     assert t._hand_index == None
 
+
 def test_decide_split_surrender_double():
-    
+
     # Test Invalid Call
     t = ThresholdPlayer()
     gc = GameConfig()
+
     @pytest.mark.parametrize("f", [t.decide_split, t.decide_double, t.decide_surrender])
     def invalid_setting(f):
         with pytest.raises(AssertionError):
             f()
-    
+
     t.sit_down(gc)
+
     @pytest.mark.parametrize("f", [t.decide_split, t.decide_double, t.decide_surrender])
     def invalid_setting(f):
         with pytest.raises(AssertionError):
             f()
-    
 
     # Threshold Player Must Never Split, Surrender, or Double
     cards = Deck(num_full_decks=1)
@@ -326,18 +335,18 @@ def test_decide_split_surrender_double():
             assert t.decide_surrender() == False
             assert t.decide_double() == False
 
+
 def test_decide_hit():
-    
+
     # Test Invalid Call
     t = ThresholdPlayer()
     gc = GameConfig()
     with pytest.raises(AssertionError):
         t.decide_hit()
-    
+
     t.sit_down(gc)
     with pytest.raises(AssertionError):
         t.decide_hit()
-    
 
     # Test Threshold Player Hit
     cards = Deck(num_full_decks=1)
@@ -349,7 +358,7 @@ def test_decide_hit():
             t.place_bet()
             t.curr_hand().add(card1).add(card2)
             assert t.decide_hit() == False
-    
+
     t.hard_threshold = 22
     t.soft_threshold = 22
     for card1 in cards.deck:
@@ -357,7 +366,7 @@ def test_decide_hit():
             t.place_bet()
             t.curr_hand().add(card1).add(card2)
             assert t.decide_hit() == True
-    
+
     t.hard_threshold = 13
     t.soft_threshold = 15
     for card1 in cards.deck:
@@ -371,7 +380,7 @@ def test_decide_hit():
                 assert t.decide_hit() == True
             else:
                 assert t.decide_hit() == False
-    
+
     t.hard_threshold = 7
     t.soft_threshold = 18
     for card1 in cards.deck:
@@ -386,8 +395,9 @@ def test_decide_hit():
             else:
                 assert t.decide_hit() == False
 
+
 def test_final_payout():
-    
+
     t = ThresholdPlayer(bankroll=5, bet=1)
     gc = GameConfig()
 
@@ -400,6 +410,7 @@ def test_final_payout():
 
     # Test Illegal Params
     t.place_bet()
+
     @pytest.mark.parametrize("p", [3, True, None, "[2]", [-1], [0, 3], (3)])
     def invalid_payout(p):
         with pytest.raises(AssertionError):
@@ -413,7 +424,7 @@ def test_final_payout():
     with pytest.raises(AssertionError):
         t.final_payout([5])
     t.final_payout([0.5, 0.5, 24, 0, 1])
-    assert round(t.bankroll,5) == 64
+    assert round(t.bankroll, 5) == 64
 
 
 def test_str_and_repr():
