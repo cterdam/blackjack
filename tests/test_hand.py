@@ -11,8 +11,10 @@ def test_constants():
 def test_init_params():
     with pytest.raises(AssertionError):
         Hand(Card)
+    with pytest.raises(AssertionError):
         Hand(Card())
-        Hand((Card()))
+    with pytest.raises(AssertionError):
+        Hand((Card(),))
     Hand()
     Hand([])
     Hand([Card()])

@@ -8,12 +8,19 @@ def test_init_params():
     # num_full_decks must be positive int
     with pytest.raises(AssertionError):
         Deck(num_full_decks=None)
+    with pytest.raises(AssertionError):
         Deck(num_full_decks=True)
+    with pytest.raises(AssertionError):
         Deck(num_full_decks=[2])
-        Deck(num_full_decks=(3))
+    with pytest.raises(AssertionError):
+        Deck(num_full_decks=(3,))
+    with pytest.raises(AssertionError):
         Deck(num_full_decks='4')
+    with pytest.raises(AssertionError):
         Deck(num_full_decks='0')
+    with pytest.raises(AssertionError):
         Deck(num_full_decks=-1)
+    with pytest.raises(AssertionError):
         Deck(num_full_decks=0)
     Deck(num_full_decks=1)
     Deck(num_full_decks=2)
@@ -22,20 +29,28 @@ def test_init_params():
     # include_special must be boolean
     with pytest.raises(AssertionError):
         Deck(include_joker='True')
+    with pytest.raises(AssertionError):
         Deck(include_joker=None)
+    with pytest.raises(AssertionError):
         Deck(include_joker=0)
+    with pytest.raises(AssertionError):
         Deck(include_joker=[False])
-        Deck(include_joker=(False))
+    with pytest.raises(AssertionError):
+        Deck(include_joker=(False,))
     Deck(include_joker=True)
     Deck(include_joker=False)
 
     # ordered must be boolean
     with pytest.raises(AssertionError):
         Deck(ordered='True')
+    with pytest.raises(AssertionError):
         Deck(ordered=None)
+    with pytest.raises(AssertionError):
         Deck(ordered=0)
+    with pytest.raises(AssertionError):
         Deck(ordered=[False])
-        Deck(ordered=(False))
+    with pytest.raises(AssertionError):
+        Deck(ordered=(False,))
     Deck(ordered=True)
     Deck(ordered=False)
 

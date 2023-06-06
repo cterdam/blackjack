@@ -6,10 +6,9 @@ import pytest
 def test_constants():
 
     # Constants should all be different
-    randoms = (Card.RANDOM_FLAG, Card.JOKER_SUIT)
-    assert len(set(itertools.chain(Card.suits, Card.ranks, Card.jokers,
-                                   randoms))) == \
-        len(Card.suits) + len(Card.ranks) + len(Card.jokers) + len(randoms)
+    randoms = (Card.RANDOM,)
+    assert len(set().union(Card.suits, Card.ranks, Card.jokers, randoms)) == \
+        len(list(itertools.chain(Card.suits, Card.ranks, Card.jokers, randoms)))
 
     # Ordinary ranks should be the collection of numbers, faces, and Ace
     ranks1 = set(Card.ranks)
@@ -38,9 +37,9 @@ def test_init_params():
 
     # Given joker cards
     c = Card(Card.LITTLE_JOKER)
-    assert c.rank == Card.LITTLE_JOKER and c.suit == Card.JOKER_SUIT
+    assert c.rank == Card.LITTLE_JOKER
     c = Card(Card.BIG_JOKER)
-    assert c.rank == Card.BIG_JOKER and c.suit == Card.JOKER_SUIT
+    assert c.rank == Card.BIG_JOKER
 
     # Given rank, random suit
     num_trials = 15
@@ -81,74 +80,68 @@ def test_init_params():
 
     # Illegal params
     with pytest.raises(AssertionError):
-        Card(Card.NUM_2, Card.RANDOM_FLAG)
-    with pytest.raises(AssertionError):
         Card(Card.NUM_7, Card.NUM_9)
     with pytest.raises(AssertionError):
         Card(Card.LITTLE_JOKER, Card.NUM_10)
     with pytest.raises(AssertionError):
         Card(Card.HEARTS, Card.SPADES)
-    with pytest.raises(AssertionError):
-        Card(Card.JOKER_SUIT, Card.RANDOM_FLAG)
-    with pytest.raises(AssertionError):
-        Card(Card.JOKER_SUIT, Card.JOKER_SUIT)
 
 
 def test_is_ace():
 
     # These are aces
-    assert Card(Card.ACE, Card.SPADES).is_ace
-    assert Card(Card.ACE, Card.DIAMONDS).is_ace
-    assert Card(Card.ACE, Card.HEARTS).is_ace
-    assert Card(Card.ACE).is_ace
+    assert Card(Card.ACE, Card.SPADES).is_ace()
+    assert Card(Card.ACE, Card.DIAMONDS).is_ace()
+    assert Card(Card.ACE, Card.HEARTS).is_ace()
+    assert Card(Card.ACE).is_ace()
 
     # These are not aces
-    assert not Card(Card.NUM_3, Card.CLUBS).is_ace
-    assert not Card(Card.KING, Card.DIAMONDS).is_ace
-    assert not Card(Card.LITTLE_JOKER).is_ace
-    assert not Card(Card.NUM_8).is_ace
+    assert not Card(Card.NUM_3, Card.CLUBS).is_ace()
+    assert not Card(Card.KING, Card.DIAMONDS).is_ace()
+    assert not Card(Card.LITTLE_JOKER).is_ace()
+    assert not Card(Card.NUM_8).is_ace()
 
 
 def test_is_number():
 
     # These are numbers
-    assert Card(Card.NUM_2, Card.CLUBS).is_number
-    assert Card(Card.NUM_3, Card.HEARTS).is_number
-    assert Card(Card.NUM_10, Card.SPADES).is_number
-    assert Card(Card.NUM_5).is_number
+    assert Card(Card.NUM_2, Card.CLUBS).is_number()
+    assert Card(Card.NUM_3, Card.HEARTS).is_number()
+    assert Card(Card.NUM_10, Card.SPADES).is_number()
+    assert Card(Card.NUM_5).is_number()
 
     # These are not numbers
-    assert not Card(Card.JACK, Card.DIAMONDS).is_number
-    assert not Card(Card.ACE, Card.HEARTS).is_number
-    assert not Card(Card.BIG_JOKER).is_number
-    assert not Card(Card.QUEEN).is_number
+    assert not Card(Card.JACK, Card.DIAMONDS).is_number()
+    assert not Card(Card.ACE, Card.HEARTS).is_number()
+    assert not Card(Card.BIG_JOKER).is_number()
+    assert not Card(Card.QUEEN).is_number()
 
 
 def test_is_face():
 
     # These are faces
-    assert Card(Card.JACK, Card.HEARTS).is_face
-    assert Card(Card.QUEEN, Card.DIAMONDS).is_face
-    assert Card(Card.KING).is_face
+    assert Card(Card.JACK, Card.HEARTS).is_face()
+    assert Card(Card.QUEEN, Card.DIAMONDS).is_face()
+    assert Card(Card.KING).is_face()
 
     # These are not faces
-    assert not Card(Card.ACE, Card.SPADES).is_face
-    assert not Card(Card.NUM_4, Card.HEARTS).is_face
-    assert not Card(Card.LITTLE_JOKER).is_face
-    assert not Card(Card.NUM_9).is_face
+    assert not Card(Card.ACE, Card.SPADES).is_face()
+    assert not Card(Card.NUM_4, Card.HEARTS).is_face()
+    assert not Card(Card.LITTLE_JOKER).is_face()
+    assert not Card(Card.NUM_9).is_face()
 
 
 def test_is_joker():
 
     # These are jokers
-    assert Card(Card.LITTLE_JOKER).is_joker
-    assert Card(Card.BIG_JOKER).is_joker
+    assert Card(Card.LITTLE_JOKER).is_joker()
+    assert Card(Card.BIG_JOKER).is_joker()
 
     # These are not jokers
-    assert not Card(Card.ACE, Card.DIAMONDS).is_joker
-    assert not Card(Card.NUM_8, Card.HEARTS).is_joker
-    assert not Card(Card.QUEEN, Card.HEARTS).is_joker
-    assert not Card(Card.JACK).is_joker
+    assert not Card(Card.ACE, Card.DIAMONDS).is_joker()
+    assert not Card(Card.NUM_8, Card.HEARTS).is_joker()
+    assert not Card(Card.QUEEN, Card.HEARTS).is_joker()
+    assert not Card(Card.JACK).is_joker()
 
 
 def test_str():

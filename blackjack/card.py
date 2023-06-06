@@ -1,42 +1,82 @@
 import random
+from enum import Enum, auto, unique
 
 
-class Card():
+class Card:
 
     ############################ Define constants ############################
 
+    @unique
+    class Constants(Enum):
+        """ Define constants for Card class """
+
+        # Suits
+        CLUBS = auto()
+        DIAMONDS = auto()
+        HEARTS = auto()
+        SPADES = auto()
+
+        # Numbers
+        NUM_2 = auto()
+        NUM_3 = auto()
+        NUM_4 = auto()
+        NUM_5 = auto()
+        NUM_6 = auto()
+        NUM_7 = auto()
+        NUM_8 = auto()
+        NUM_9 = auto()
+        NUM_10 = auto()
+
+        # Faces
+        JACK = auto()
+        QUEEN = auto()
+        KING = auto()
+
+        # Ace
+        ACE = auto()
+
+        # Jokers
+        LITTLE_JOKER = auto()
+        BIG_JOKER = auto()
+
+        # Flag for initializing a random card
+        RANDOM = auto()
+
+    """ Collect these constants from Constants class """
+
     # Suits
-    CLUBS = 'Clubs'
-    DIAMONDS = 'Diamonds'
-    HEARTS = 'Hearts'
-    SPADES = 'Spades'
+    CLUBS = Constants.CLUBS
+    DIAMONDS = Constants.DIAMONDS
+    HEARTS = Constants.HEARTS
+    SPADES = Constants.SPADES
 
     # Numbers
-    NUM_2 = '2'
-    NUM_3 = '3'
-    NUM_4 = '4'
-    NUM_5 = '5'
-    NUM_6 = '6'
-    NUM_7 = '7'
-    NUM_8 = '8'
-    NUM_9 = '9'
-    NUM_10 = '10'
+    NUM_2 = Constants.NUM_2
+    NUM_3 = Constants.NUM_3
+    NUM_4 = Constants.NUM_4
+    NUM_5 = Constants.NUM_5
+    NUM_6 = Constants.NUM_6
+    NUM_7 = Constants.NUM_7
+    NUM_8 = Constants.NUM_8
+    NUM_9 = Constants.NUM_9
+    NUM_10 = Constants.NUM_10
 
     # Faces
-    JACK = 'Jack'
-    QUEEN = 'Queen'
-    KING = 'King'
+    JACK = Constants.JACK
+    QUEEN = Constants.QUEEN
+    KING = Constants.KING
 
     # Ace
-    ACE = 'Ace'
+    ACE = Constants.ACE
 
     # Jokers
-    LITTLE_JOKER = 'Little Joker'
-    BIG_JOKER = 'Big Joker'
+    LITTLE_JOKER = Constants.LITTLE_JOKER
+    BIG_JOKER = Constants.BIG_JOKER
 
     # Flag for initializing a random card
-    RANDOM_FLAG = 'Random Flag'
-    JOKER_SUIT = 'Joker Suit'
+    RANDOM = Constants.RANDOM
+
+    """ Define other collections """
 
     # Collections
     suits = (CLUBS, DIAMONDS, HEARTS, SPADES)
@@ -45,36 +85,36 @@ class Card():
     ranks = (ACE,) + numbers + faces
     jokers = (LITTLE_JOKER, BIG_JOKER)
 
-    # Representation dictionaries
-    rank2str = {ACE: 'A', NUM_2: '2', NUM_3: '3', NUM_4: '4', NUM_5: '5',
-                NUM_6: '6', NUM_7: '7', NUM_8: '8', NUM_9: '9', NUM_10: '10',
-                JACK: 'J', QUEEN: 'Q', KING: 'K',
-                LITTLE_JOKER: 'Little Joker', BIG_JOKER: 'Big Joker'}
-    suit2str = {CLUBS: '♣', DIAMONDS: '♦', HEARTS: '♥', SPADES: '♠',
-                JOKER_SUIT: ''}
-    rank2repr = {ACE: 'Ace', NUM_2: '2', NUM_3: '3', NUM_4: '4', NUM_5: '5',
+    # Representation
+    _rank2str = {ACE: 'A', NUM_2: '2', NUM_3: '3', NUM_4: '4', NUM_5: '5',
                  NUM_6: '6', NUM_7: '7', NUM_8: '8', NUM_9: '9', NUM_10: '10',
-                 JACK: 'Jack', QUEEN: 'Queen', KING: 'King',
+                 JACK: 'J', QUEEN: 'Q', KING: 'K',
                  LITTLE_JOKER: 'Little Joker', BIG_JOKER: 'Big Joker'}
-    suit2repr = {CLUBS: 'Clubs', DIAMONDS: 'Diamonds', HEARTS: 'Hearts',
-                 SPADES: 'Spades', JOKER_SUIT: ''}
+    _suit2str = {CLUBS: '♣', DIAMONDS: '♦', HEARTS: '♥', SPADES: '♠',
+                 RANDOM: ''}
+    _rank2repr = {ACE: 'Ace', NUM_2: '2', NUM_3: '3', NUM_4: '4', NUM_5: '5',
+                  NUM_6: '6', NUM_7: '7', NUM_8: '8', NUM_9: '9', NUM_10: '10',
+                  JACK: 'Jack', QUEEN: 'Queen', KING: 'King',
+                  LITTLE_JOKER: 'Little Joker', BIG_JOKER: 'Big Joker'}
+    _suit2repr = {CLUBS: 'Clubs', DIAMONDS: 'Diamonds', HEARTS: 'Hearts',
+                  SPADES: 'Spades', RANDOM: ''}
 
     ##########################################################################
 
-    def __init__(self, rank=RANDOM_FLAG, suit=JOKER_SUIT):
+    def __init__(self, rank=RANDOM, suit=RANDOM):
         """
         Initializes card.
 
         Params: rank, suit.
         Req: either (rank in Card.ranks and suit in Card.suits)
                 -> given rank, given suit
-             or     (rank in Card.jokers and suit == Card.JOKER_SUIT)
+             or     (rank in Card.jokers and suit == Card.RANDOM)
                 -> given joker rank, joker suit
-             or     (rank in Card.ranks and suit == Card.JOKER_SUIT)
+             or     (rank in Card.ranks and suit == Card.RANDOM)
                 -> given rank, random suit
-             or     (rank in Card.suits and suit == Card.JOKER_SUIT)
-                -> random rank, given suit
-             or     (rank == Card.RANDOM_FLAG and suit == Card.JOKER_SUIT)
+             or     (rank in Card.suits and suit == Card.RANDOM)
+                -> given suit, random rank
+             or     (rank == Card.RANDOM and suit == Card.RANDOM)
                 -> random rank, random suit (excluding jokers)
 
         Examples:
@@ -96,29 +136,29 @@ class Card():
             if suit in Card.suits:
                 # Given rank, given suit
                 pass
-            elif suit == Card.JOKER_SUIT:
+            elif suit == Card.RANDOM:
                 # Given rank, random suit
                 suit = Card._random_suit()
             else:
                 raise invalid_param
 
         elif rank in Card.jokers:
-            if suit == Card.JOKER_SUIT:
+            if suit == Card.RANDOM:
                 # Given joker card
                 pass
             else:
                 raise invalid_param
 
         elif rank in Card.suits:
-            if suit == Card.JOKER_SUIT:
+            if suit == Card.RANDOM:
                 # Random rank, given suit
                 suit = rank
                 rank = Card._random_rank()
             else:
                 raise invalid_param
 
-        elif rank == Card.RANDOM_FLAG:
-            if suit == Card.JOKER_SUIT:
+        elif rank == Card.RANDOM:
+            if suit == Card.RANDOM:
                 # Random rank, random suit
                 rank = Card._random_rank()
                 suit = Card._random_suit()
@@ -131,26 +171,27 @@ class Card():
         self.rank = rank
         self.suit = suit
 
-        # Properties
-        self.is_ace = self.rank == Card.ACE
-        self.is_number = self.rank in Card.numbers
-        self.is_face = self.rank in Card.faces
-        self.is_joker = self.rank in Card.jokers
+    def is_ace(self):
+        """ Returns True iff the rank is Ace.  """
+        return self.rank == Card.ACE
 
-        # Short string representation
-        # ♣A, ♥2, ♦Q, Big Joker
-        self.str = Card.suit2str[self.suit] + Card.rank2str[self.rank]
+    def is_number(self):
+        """ Returns True iff the rank is a number (2-10).  """
+        return self.rank in Card.numbers
 
-        # Long string representation
-        # Ace of Clubs, 2 of Hearts, Queen of Diamonds, Big Joker
-        self.repr = Card.rank2repr[self.rank] + \
-            (' of ' if not self.is_joker else '') + Card.suit2repr[self.suit]
+    def is_face(self):
+        """ Returns True iff the rank is a Face card (J, Q, K). """
+        return self.rank in Card.faces
+
+    def is_joker(self):
+        """ Returns True iff the card is a Joker card. """
+        return self.rank in Card.jokers
 
     def __str__(self):
         """
         Gives the short string representation of the card.
 
-        Returns (str):
+        Returns(str):
             For ordinary cards
                 -> 'IV' where I is a suit icon, and V is the value in short
             For joker cards
@@ -159,13 +200,13 @@ class Card():
         Examples:
             '♥A', '♣3', 'Big Joker'
         """
-        return self.str
+        return Card._suit2str[self.suit] + Card._rank2str[self.rank]
 
     def __repr__(self):
         """
         Gives the long string representation of the card.
 
-        Returns (str):
+        Returns(str):
             For ordinary cards
                 -> 'V of S' where V is the value repr, and S is the suit repr
             For joker cards
@@ -175,7 +216,9 @@ class Card():
             'Ace of Hearts', '3 of Clubs', 'Big Joker'
 
         """
-        return self.repr
+        return Card._rank2repr[self.rank] + \
+            (' of ' if not self.is_joker() else '') + \
+            Card._suit2repr[self.suit]
 
     def __eq__(self, other):
         """
@@ -199,6 +242,6 @@ class Card():
     @classmethod
     def _random_suit(cls):
         """
-        Returns a random suit from Card.suits, excluding Card.JOKER_SUIT.
+        Returns a random suit from Card.suits
         """
         return random.sample(Card.suits, 1)[0]
