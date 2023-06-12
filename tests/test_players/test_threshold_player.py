@@ -6,49 +6,53 @@ from blackjack.hand import Hand
 from blackjack.player import Player
 from blackjack.players.threshold_player import ThresholdPlayer
 
+# Runs f(input) for all input in inputs
+def parametrize_test(inputs, f):
+    for input in inputs:
+        f(input)
 
 def test_init_params():
 
     # name must be string
-    @pytest.mark.parametrize("name", [None, True, 0, 0.5, [2]])
     def invalid_name(name):
         with pytest.raises(AssertionError):
             ThresholdPlayer(name=name)
+    parametrize_test([None, True, 0, 0.5, [2]], invalid_name)
     ThresholdPlayer(name="")
     ThresholdPlayer(name="Alice")
     ThresholdPlayer(name="0")
 
     # bankroll must be non-negative int or float
-    @pytest.mark.parametrize("b", [None, True, "0", [3], (4), -0.5, -1])
-    def invalid_name(b):
+    def invalid_bankroll(b):
         with pytest.raises(AssertionError):
             ThresholdPlayer(bankroll=b)
+    parametrize_test([None, True, "0", [3], -0.5, -1], invalid_bankroll)
     ThresholdPlayer(bankroll=0)
     ThresholdPlayer(bankroll=5)
     ThresholdPlayer(bankroll=12.5)
     ThresholdPlayer(bankroll=float('inf'))
 
     # hard_threshold must be non-negative int
-    @pytest.mark.parametrize("t", [None, True, "0", [3], (4), 3.5, -1])
-    def invalid_name(t):
+    def invalid_soft(t):
         with pytest.raises(AssertionError):
             ThresholdPlayer(hard_threshold=t)
+    parametrize_test([None, True, "0", [3], 3.5, -1], invalid_soft)
     ThresholdPlayer(hard_threshold=0)
     ThresholdPlayer(hard_threshold=5)
 
     # soft_threshold must be non-negative int
-    @pytest.mark.parametrize("t", [None, True, "0", [3], (4), 3.5, -1])
-    def invalid_name(t):
+    def invalid_hard(t):
         with pytest.raises(AssertionError):
             ThresholdPlayer(soft_threshold=t)
+    parametrize_test([None, True, "0", [3], 3.5, -1], invalid_hard)
     ThresholdPlayer(soft_threshold=0)
     ThresholdPlayer(soft_threshold=5)
 
     # bet must be non-negative int or float
-    @pytest.mark.parametrize("b", [None, True, "0", [3], (4), -0.5, -1])
-    def invalid_name(b):
+    def invalid_bet(b):
         with pytest.raises(AssertionError):
             ThresholdPlayer(bet=b)
+    parametrize_test([None, True, "0", [3], -0.5, -1], invalid_bet)
     ThresholdPlayer(bet=0)
     ThresholdPlayer(bet=5)
     ThresholdPlayer(bet=12.5)
@@ -86,10 +90,10 @@ def test_init_params():
 def test_sit_down():
 
     # Test Illegal Params
-    @pytest.mark.parametrize("gc", [None, True, 0, 0.5, [2], "game_config"])
     def invalid_gc(gc):
         with pytest.raises(AssertionError):
             ThresholdPlayer().sit_down(gc)
+    parametrize_test([None, True, 0, 0.5, [2], "game_config"], invalid_gc)
 
     # Test updating game_config
     gc1 = GameConfig()
@@ -128,6 +132,8 @@ def test_place_bet():
     t1 = ThresholdPlayer(bankroll=100, bet=5)
     gc_int_bet = GameConfig(int_bet_only=True)
     gc_all_bet = GameConfig(int_bet_only=False)
+    gc_min_max = GameConfig(min_bet=10, max_bet=20)
+
     t1.sit_down(gc_int_bet)
     assert t1.place_bet() == 5
     assert t1.bankroll == 95
@@ -137,6 +143,7 @@ def test_place_bet():
     assert t1.bankroll == 90
     initialized_hands(t1)
 
+    # Test respecting gameConfig.int_bet_only
     t2 = ThresholdPlayer(bankroll=3, bet=4.01)
     t2.sit_down(gc_int_bet)
     assert t2.place_bet() == 3
@@ -155,6 +162,20 @@ def test_place_bet():
     assert round(t3.bankroll, 5) == 2.8
     initialized_hands(t3)
 
+    # Test respecting gameConfig.min_bet and max_bet
+    tlow = ThresholdPlayer(bankroll=100, bet=5)
+    tmiddle = ThresholdPlayer(bankroll=100, bet=15)
+    thigh = ThresholdPlayer(bankroll=100, bet=25)
+    tlow.sit_down(gc_min_max)
+    tmiddle.sit_down(gc_min_max)
+    thigh.sit_down(gc_min_max)
+    assert tlow.place_bet() == 10
+    assert tlow.bankroll == 90
+    assert tmiddle.place_bet() == 15
+    assert tmiddle.bankroll == 85
+    assert thigh.place_bet() == 20
+    assert thigh.bankroll == 80
+
 
 def test_observe_card():
 
@@ -167,16 +188,16 @@ def test_observe_card():
     t.sit_down(GameConfig())
 
     # card must be of type Card
-    @pytest.mark.parametrize('card', [None, True, "Big Joker", 3, [-2]])
     def invalid_card(card):
         with pytest.raises(AssertionError):
             t.observe_card(card, 1)
+    parametrize_test([None, True, "Big Joker", 3, [-2]], invalid_card)
 
     # player must be non-negative int
-    @pytest.mark.parametrize('player', [None, True, "0", -1, [2], (1), 0.5])
     def invalid_player(player):
         with pytest.raises(AssertionError):
             t.observe_card(c, player)
+    parametrize_test([None, True, "0", -1, [2], 0.5], invalid_player)
 
     t.observe_card(c, 1)
     t.observe_card(c, 0)
@@ -285,26 +306,18 @@ def test_insurance():
     assert t.decide_insurance() == False
 
     # Test Insurance Payout
-    @pytest.mark.parametrize("p", [None, False, "0", [2], (3), -2])
     def invalid_payout(p):
         with pytest.raises(AssertionError):
             t.insurance_payout(p)
+    parametrize_test([None, False, "0", [2], -2], invalid_payout)
     t.insurance_payout(5)
     assert t.bankroll == 9
-    assert t._hands == None
-    assert t._hand_index == None
 
-    t.place_bet()
     t.insurance_payout(0)
-    assert t.bankroll == 8
-    assert t._hands == None
-    assert t._hand_index == None
+    assert t.bankroll == 9
 
-    t.place_bet()
     t.insurance_payout(0.5)
-    assert round(t.bankroll, 5) == 7.5
-    assert t._hands == None
-    assert t._hand_index == None
+    assert round(t.bankroll, 5) == 9.5
 
 
 def test_decide_split_surrender_double():
@@ -313,17 +326,14 @@ def test_decide_split_surrender_double():
     t = ThresholdPlayer()
     gc = GameConfig()
 
-    @pytest.mark.parametrize("f", [t.decide_split, t.decide_double, t.decide_surrender])
     def invalid_setting(f):
         with pytest.raises(AssertionError):
             f()
+    parametrize_test([t.decide_split, t.decide_double, t.decide_surrender], invalid_setting)
 
     t.sit_down(gc)
 
-    @pytest.mark.parametrize("f", [t.decide_split, t.decide_double, t.decide_surrender])
-    def invalid_setting(f):
-        with pytest.raises(AssertionError):
-            f()
+    parametrize_test([t.decide_split, t.decide_double, t.decide_surrender], invalid_setting)
 
     # Threshold Player Must Never Split, Surrender, or Double
     cards = Deck(num_full_decks=1)
@@ -411,10 +421,11 @@ def test_final_payout():
     # Test Illegal Params
     t.place_bet()
 
-    @pytest.mark.parametrize("p", [3, True, None, "[2]", [-1], [0, 3], (3)])
     def invalid_payout(p):
         with pytest.raises(AssertionError):
             t.final_payout(p)
+    parametrize_test([3, True, None, "[2]", [-1], [0, 3]], invalid_payout)
+
     assert t.bankroll == 4
     t.final_payout([35])
     assert t.bankroll == 39

@@ -30,13 +30,25 @@ class ThresholdPlayer(Player):
         if not isinstance(name, str):
             raise invalid_param
         # Each of these arguments must be non-negative integers
-        if type(bankroll) not in (int, float) or bankroll < 0:
+        if isinstance(
+                bankroll,
+                bool) or type(bankroll) not in (
+                int,
+                float) or bankroll < 0:
             raise invalid_param
-        if not isinstance(hard_threshold, int) or hard_threshold < 0:
+        if isinstance(
+                hard_threshold,
+                bool) or not isinstance(
+                hard_threshold,
+                int) or hard_threshold < 0:
             raise invalid_param
-        if not isinstance(soft_threshold, int) or soft_threshold < 0:
+        if isinstance(
+                soft_threshold,
+                bool) or not isinstance(
+                soft_threshold,
+                int) or soft_threshold < 0:
             raise invalid_param
-        if type(bet) not in (int, float) or bet < 0:
+        if isinstance(bet, bool) or type(bet) not in (int, float) or bet < 0:
             raise invalid_param
 
         # Initialize Basic Player Information
@@ -77,9 +89,14 @@ class ThresholdPlayer(Player):
         Places the player's bet for a round. Only callable if player has
         already sat down.
 
-        Returns (int):
+        Returns (int or float):
             bet -> The amount the player is betting.
-            Inv: 0 <= bet <= bankroll, where bankroll is the player's bankroll
+                Inv:
+                    -> 0 <= bet <= bankroll, where bankroll is the
+                        player's bankroll
+                    -> min_bet <= bet <= max_bet, where min_bet and max_bet are
+                        defined by the game_config the player is playing with
+                    -> If int_bet_only enabled, bet is an int
 
         Side Effects:
             -> Subtracts the bet amount from the player's bankroll.
@@ -88,10 +105,12 @@ class ThresholdPlayer(Player):
         if self._game_config is None:
             raise AssertionError('Player must sit down before placing a bet.')
 
+        min_bet, max_bet = self._game_config.min_bet, self._game_config.max_bet
+        bet = max(min_bet, min(max_bet, self.bet))
         if self._game_config.int_bet_only:
-            bet = min(self.bankroll, int(self.bet))
+            bet = min(self.bankroll, int(bet))
         else:
-            bet = min(self.bankroll, self.bet)
+            bet = min(self.bankroll, bet)
 
         self.bankroll -= bet
         if bet > 0:
@@ -117,7 +136,11 @@ class ThresholdPlayer(Player):
             raise AssertionError("Player can't observe card if not in a game.")
         if not isinstance(card, Card):
             raise AssertionError("Invalid params")
-        if not isinstance(player, int) or player < 0:
+        if isinstance(
+                player,
+                bool) or not isinstance(
+                player,
+                int) or player < 0:
             raise AssertionError("Invalid params")
         pass
 
@@ -172,7 +195,8 @@ class ThresholdPlayer(Player):
             -> True if the player wishes to take insurance.
             -> False otherwise.
 
-        Side
+        Side Effects:
+            -> Subtracts half of current hand's bet from the bankroll.
         """
         if not self.has_hand():
             raise AssertionError("Player cannot decide before placing a bet.")
@@ -251,8 +275,7 @@ class ThresholdPlayer(Player):
 
     def insurance_payout(self, payout):
         """
-        Gives the player payout for their insurance bet, and ends the round
-        that began with the previous place_bet call.
+        Gives the player payout for their insurance bet.
 
         Params:
             payout (int or float): The amount to payout to the player.
@@ -260,7 +283,6 @@ class ThresholdPlayer(Player):
 
         Side Effects:
             -> Adds payout to the player's bankroll.
-            -> Reset's the player's hand.
         """
         if not isinstance(self._hands, list):
             raise AssertionError(
@@ -269,8 +291,6 @@ class ThresholdPlayer(Player):
             raise AssertionError("Invalid parameters.")
 
         self.bankroll += payout
-        self._hands = None
-        self._hand_index = None
 
     def final_payout(self, payouts):
         """
@@ -278,9 +298,9 @@ class ThresholdPlayer(Player):
         that began with the previous place_bet call.
 
         Params:
-            payouts (int list or float list): The amount to pay out to 
+            payouts (int list or float list): The amount to pay out to
             the player for each hand.
-                Req: 
+                Req:
                     -> len(payouts) is the number of hands the player is playing
                         with
                     -> payouts[i] >= 0 for all 0 <= i < len(payouts)

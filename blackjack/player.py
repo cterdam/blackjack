@@ -33,9 +33,14 @@ class Player(ABC):
         Places the player's bet for a round. Only callable if player has
         already sat down.
 
-        Returns (int):
+        Returns (int or float):
             bet -> The amount the player is betting.
-            Inv: 0 <= bet <= bankroll, where bankroll is the player's bankroll
+                Inv: 
+                    -> 0 <= bet <= bankroll, where bankroll is the 
+                        player's bankroll
+                    -> min_bet <= bet <= max_bet, where min_bet and max_bet are
+                        defined by the game_config the player is playing with
+                    -> If int_bet_only enabled, bet is an int
 
         Side Effects:
             -> Subtracts the bet amount from the player's bankroll.
@@ -98,10 +103,11 @@ class Player(ABC):
         if the player has already placed a bet.
 
         Returns (bool):
-            -> True if the player wishes to take insurance.
+            -> True if the player can and wishes to take insurance.
             -> False otherwise.
 
-        Side
+        Side Effects:
+            -> Subtracts half of current hand's bet from the bankroll.
         """
 
     @abstractmethod
@@ -163,8 +169,7 @@ class Player(ABC):
     @abstractmethod
     def insurance_payout(self, payout):
         """
-        Gives the player payout for their insurance bet, and ends the round
-        that began with the previous place_bet call.
+        Gives the player payout for their insurance bet.
 
         Params:
             payout (int or float): The amount to payout to the player.
@@ -172,7 +177,6 @@ class Player(ABC):
         
         Side Effects:
             -> Adds payout to the player's bankroll.
-            -> Reset's the player's hand.
         """
         pass
 
