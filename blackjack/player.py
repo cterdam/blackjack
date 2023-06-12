@@ -10,7 +10,7 @@ class Player(ABC):
         Params:
             name (str): The player's name.
                 Req: None
-            bankroll (int): The player's starting bankroll.
+            bankroll (int or float): The player's starting bankroll.
                 Req: bankroll >= 0
         """
         pass
@@ -30,11 +30,17 @@ class Player(ABC):
     @abstractmethod
     def place_bet(self):
         """
-        Places the player's bet for a round.
+        Places the player's bet for a round. Only callable if player has
+        already sat down.
 
-        Returns (int):
+        Returns (int or float):
             bet -> The amount the player is betting.
-            Inv: 0 <= bet <= bankroll, where bankroll is the player's bankroll
+                Inv: 
+                    -> 0 <= bet <= bankroll, where bankroll is the 
+                        player's bankroll
+                    -> min_bet <= bet <= max_bet, where min_bet and max_bet are
+                        defined by the game_config the player is playing with
+                    -> If int_bet_only enabled, bet is an int
 
         Side Effects:
             -> Subtracts the bet amount from the player's bankroll.
@@ -45,7 +51,8 @@ class Player(ABC):
     @abstractmethod
     def observe_card(self, card, player):
         """
-        Notifies the player of a card being assigned to some player.
+        Notifies the player of a card being assigned to some player. Only
+        callable if the player has already placed a bet.
 
         Params:
             card (Card): The card to be observed.
@@ -69,10 +76,13 @@ class Player(ABC):
     @abstractmethod
     def curr_hand(self):
         """
-        Returns the hand object the player is current focusing on.
+        Returns the hand object the player is current focusing on, if it exists.
 
-        Returns (Hand):
-            The hand the player is currently playing with.
+        Returns:
+            if the player is currently playing with a hand
+                -> (Hand) the hand the player is playing with
+            else
+                -> None
         """
         pass
 
@@ -87,13 +97,28 @@ class Player(ABC):
         pass
 
     @abstractmethod
-    def decide_split(self):
+    def decide_insurance(self):
         """
-        Determines whether the player wishes to split their hand.
+        Determines whether the player wishes to take insurance. Only callable
+        if the player has already placed a bet.
 
         Returns (bool):
-            -> True if the player wishes to split their current hand
-            -> False otherwise
+            -> True if the player can and wishes to take insurance.
+            -> False otherwise.
+
+        Side Effects:
+            -> Subtracts half of current hand's bet from the bankroll.
+        """
+
+    @abstractmethod
+    def decide_split(self):
+        """
+        Determines whether the player wishes to split their hand. Only
+        callable if the player has already placed a bet.
+
+        Returns (bool):
+            -> True if the player wishes to split their current hand.
+            -> False otherwise.
 
         Side Effects:
             -> Subtracts the additional bet from the bankroll if the player
@@ -104,22 +129,24 @@ class Player(ABC):
     @abstractmethod
     def decide_surrender(self):
         """
-        Determine whether the player wishes to surrender their hand.
+        Determine whether the player wishes to surrender their hand. Only
+        callable if the player has already placed a bet.
 
         Returns (bool):
-            -> True if the player wishes to surrender their current hand
-            -> False otherwise
+            -> True if the player wishes to surrender their current hand.
+            -> False otherwise.
         """
         pass
 
     @abstractmethod
     def decide_double(self):
         """
-        Determine whether the player wishes to double their hand.
+        Determine whether the player wishes to double their hand. Only
+        callable if the player has already placed a bet.
 
         Returns (bool):
-            -> True if the player wishes to double their current hand
-            -> False otherwise
+            -> True if the player wishes to double their current hand.
+            -> False otherwise.
 
         Side Effects:
             -> Subtracts the additional bet from the bankroll if the player
@@ -130,18 +157,34 @@ class Player(ABC):
     @abstractmethod
     def decide_hit(self):
         """
-        Determine whether the player wishes to hit their hand.
+        Determine whether the player wishes to hit their hand. Only callable
+        if the player has already placed a bet.
 
         Returns (bool):
-            -> True if the player wishes to hit their current hand
-            -> False otherwise
+            -> True if the player wishes to hit their current hand.
+            -> False otherwise.
         """
         pass
 
     @abstractmethod
-    def payout(self, payouts):
+    def insurance_payout(self, payout):
         """
-        Gives the player payouts for their current hands.
+        Gives the player payout for their insurance bet.
+
+        Params:
+            payout (int or float): The amount to payout to the player.
+                Req: payout >= 0
+        
+        Side Effects:
+            -> Adds payout to the player's bankroll.
+        """
+        pass
+
+    @abstractmethod
+    def final_payout(self, payouts):
+        """
+        Gives the player payouts for their current hands, and ends the round
+        that began with the previous place_bet call.
 
         Params:
             payouts (int list or float list): The amount to pay out to 
@@ -153,6 +196,7 @@ class Player(ABC):
 
         Side Effects:
             -> Adds each payout to the player's bankroll.
+            -> Resets the player's hand.
         """
         pass
 
