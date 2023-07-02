@@ -113,8 +113,29 @@ def test_add():
     assert Hand(AA).add(Card(Card.NUM_3)) == Hand(AA3)
     assert Hand(AA).add(Card(Card.NUM_6)).add(Card(Card.NUM_4)) == Hand(AA64)
     assert Hand(AA).add(Card(Card.ACE)) == Hand(AAA)
-    assert Hand(AAA).add(Card(Card.JACK)) == Hand(AAAJ)
+    assert Hand(AAbA).add(Card(Card.JACK)) == Hand(AAAJ)
 
+def test_explode(): 
+    assert Hand(h).explode == [] 
+    assert Hand(h2).explode == [Hand([Card(Card.NUM_2)])]
+    assert Hand(h23).explode == [Hand([Card(Card.NUM_2), Card(Card.NUM_3)])]
+    assert Hand(h55).explode == [Hand([Card(Card.NUM_5), Card(Card.NUM_5)])]
+    assert Hand(A).explode == [Hand([Card(Card.ACE)])]
+    assert Hand(h66).explode == [Hand([Card(Card.NUM_6), Card(Card.NUM_6)])]
+    assert Hand(AA).explode == [Hand([Card(Card.ACE), Card(Card.ACE)])]
+    assert Hand(h67).explode ==  [Hand([Card(Card.NUM_6), Card(Card.NUM_7)])]
+    assert Hand(AAAJ).explode  == [Hand([Card(Card.ACE), Card(Card.ACE), Card(Card.ACE), Card(Card.JACK)])]
+    assert Hand(AAA).explode() == [Hand([Card(Card.ACE)]), Hand([Card(Card.ACE)]), Hand([Card(Card.ACE)])]
+    assert Hand(AA64).explode() == [Hand([Card(Card.NUM_6)]), Hand([Card(Card.NUM_4)]), Hand([Card(Card.ACE)]), Hand([Card(Card.ACE)])]
+    assert Hand(AA3).explode() == [Hand([Card(Card.NUM_3)]), Hand([Card(Card.ACE)]), Hand([Card(Card.ACE)])]
+    assert Hand(A6).explode() == [Hand([Card(Card.ACE)]), Hand([Card(Card.NUM_6)])]
+    assert Hand(h8352).explode() == [Hand([Card(Card.NUM_8)]), Hand([Card(Card.NUM_3)]), Hand([Card(Card.NUM_5)]), Hand([Card(Card.NUM_2)])]
+    assert Hand(A45).explode() == [Hand([Card(Card.ACE)]), Hand([Card(Card.NUM_4)]), Hand([Card(Card.NUM_5)])]
+    assert Hand(K28).explode() == [Hand([Card(Card.NUM_2)]), Hand([Card(Card.KING)]), Hand([Card(Card.NUM_8)])]
+    assert Hand(AK).explode() == [Hand([Card(Card.ACE)]), Hand([Card(Card.KING)])]
+    assert Hand(h777).explode() == [Hand([Card(Card.NUM_7)]), Hand([Card(Card.NUM_7)]), Hand([Card(Card.NUM_7)])]
+    assert Hand(Q75).explode() == [Hand([Card(Card.NUM_5)]), Hand([Card(Card.NUM_7)]), Hand([Card(Card.QUEEN)])]
+    assert Hand(JQK5A).explode() == [Hand([Card(Card.KING)]), Hand([Card(Card.JACK)]), Hand([Card(Card.QUEEN)]), Hand([Card(Card.NUM_5)]), Hand([Card(Card.ACE)])]
 
 def test_str_and_repr():
     for handlist in handlists:
