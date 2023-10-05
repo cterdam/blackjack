@@ -1,16 +1,10 @@
-from blackjack.game import Game
-from blackjack.card import Card
-from blackjack.game_config import GameConfig
+from blackjack import Card, Game, GameConfig
 
 
 def test_constants():
     # Cut card should only appear once in the play deck
     g = Game(GameConfig())
     assert g.deck.deck.count(Game.cut_card) == 1
-
-    # rank2value should send each of 2-K to int or float
-    for r in (Card.numbers + Card.faces):
-        assert type(Game.rank2value[r]) in (int, float)
 
 
 def test_reshuffle_threshold():

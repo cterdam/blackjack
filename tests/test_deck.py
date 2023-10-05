@@ -1,6 +1,5 @@
 import pytest
-from blackjack.card import Card
-from blackjack.deck import Deck
+from blackjack import Card, Deck
 
 
 def test_init_params():

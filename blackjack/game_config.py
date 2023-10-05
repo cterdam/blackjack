@@ -1,30 +1,78 @@
+from blackjack import Card
+
+
 class GameConfig:
+
+    ############################ Define constants ############################
+
+    class Defaults:
+        """ Assign default value for each field """
+
+        num_decks = 6
+        reshuffle_threshold = 0.25
+        double_after_split = True
+        max_hands = 4
+        early_surrender = False
+        insurance = True
+        late_surrender = True
+        normal_pay = 1
+        blackjack_pay = 3 / 2
+        natural_blackjack_only = True
+        min_bet = 0
+        max_bet = float("inf")
+        int_bet_only = True
+        blackjack_value = 21
+        max_turns = 300
+        init_hand_size = 2
+
+        valuation = {
+            Card.NUM_2: 2,
+            Card.NUM_3: 3,
+            Card.NUM_4: 4,
+            Card.NUM_5: 5,
+            Card.NUM_6: 6,
+            Card.NUM_7: 7,
+            Card.NUM_8: 8,
+            Card.NUM_9: 9,
+            Card.NUM_10: 10,
+            Card.JACK: 10,
+            Card.QUEEN: 10,
+            Card.KING: 10,
+            Card.ACE: (1, 11)
+        }
+
+    ##########################################################################
 
     def __init__(
         self,
-        num_decks=8,
-        reshuffle_threshold=0.25,
-        double_after_split=True,
-        max_hands=4,
-        early_surrender=False,
-        insurance=True,
-        late_surrender=True,
-        normal_pay=1,
-        blackjack_pay=3 / 2,
-        natural_blackjack_only=True,
-        min_bet=0,
-        max_bet=float("inf"),
-        int_bet_only=True,
-        blackjack_value=21,
-        max_turns=300,
-        init_hand_size=2,
+        num_decks=Defaults.num_decks,
+        reshuffle_threshold=Defaults.reshuffle_threshold,
+        double_after_split=Defaults.double_after_split,
+        max_hands=Defaults.max_hands,
+        early_surrender=Defaults.early_surrender,
+        insurance=Defaults.insurance,
+        late_surrender=Defaults.late_surrender,
+        normal_pay=Defaults.normal_pay,
+        blackjack_pay=Defaults.blackjack_pay,
+        natural_blackjack_only=Defaults.natural_blackjack_only,
+        min_bet=Defaults.min_bet,
+        max_bet=Defaults.max_bet,
+        int_bet_only=Defaults.int_bet_only,
+        blackjack_value=Defaults.blackjack_value,
+        max_turns=Defaults.max_turns,
+        init_hand_size=Defaults.init_hand_size,
+        valuation=Defaults.valuation
     ):
         """
         Config for a Blackjack game.
 
-        TODO (extra): card valuation, num of cards for each hit,
-            num of cards for each double, amount of bet for double, amount of
-            bet for split, and amount of payout for surrender
+        TODO (extra):
+            num of cards for each hit,
+            num of cards for each double,
+            amount of bet for insurance,
+            amount of bet for split,
+            amount of bet for double,
+            amount of payout for surrender
 
         Params:
 
@@ -55,7 +103,7 @@ class GameConfig:
 
             insurance (bool): Whether a player is allowed to make the side bet
                 for dealer Blackjack if the dealer upcard is Ace. The player
-                is not allowed to make side bets if already surrendered early.
+                is not allowed to make side bets if already surrendered.
 
             late_surrender (bool): Whether a player is allowed to surrender
                 after the dealer checks for Blackjack.
@@ -94,8 +142,8 @@ class GameConfig:
                 only integer-valued bets.
                 Req: None
 
-            blackjack_value (int): Sum at which a hand triggers the blackjack
-                pay if dealt naturally.
+            blackjack_value (int or float): Sum at which a hand triggers the
+                blackjack pay if dealt naturally.
                 Req: blackjack_value > 0
 
             max_turns (int): The maximum number of permissable turns
@@ -104,6 +152,14 @@ class GameConfig:
             init_hand_size (int): The Number of cards each player starts with
                 in a hand
                 Req: init_hand_size >= 0
+
+            valuation (dict): The value each possible Card rank can take.
+                Req: The keys should include all Card ranks (excluding
+                    jokers), and a value should be either a number (int or
+                    float), or a tuple of length more than 1 containing
+                    numbers (int or float), where the rank can take on any
+                    value within the tuple. In the tuple case, all values in
+                    the tuple must be distinct.
         """
 
         """ Init param check """
@@ -141,20 +197,17 @@ class GameConfig:
         # natural_blackjack_only should be int or float
         assert type(natural_blackjack_only) is bool
 
-        # min_bet should be non-negative int or float
+        # min_bet should be int or float
         assert type(min_bet) in (int, float)
-        assert min_bet >= 0
 
-        # max_bet should be non-negative int or float
+        # max_bet should be int or float
         assert type(max_bet) in (int, float)
-        assert max_bet >= 0
 
         # int_bet_only should be bool
         assert type(int_bet_only) is bool
 
-        # blackjack_value should be positive int
-        assert type(blackjack_value) is int
-        assert blackjack_value > 0
+        # blackjack_value should be int or float
+        assert type(blackjack_value) in (int, float)
 
         # max_turns should be positive int
         assert type(max_turns) is int
@@ -163,6 +216,9 @@ class GameConfig:
         # init_hand_size should be non-negative int
         assert type(init_hand_size) is int
         assert init_hand_size >= 0
+
+        # valuation must satisfy certain criteria
+        assert GameConfig.is_valid_valuation(valuation)
 
         """ Store values """
 
@@ -182,3 +238,33 @@ class GameConfig:
         self.blackjack_value = blackjack_value
         self.max_turns = max_turns
         self.init_hand_size = init_hand_size
+        self.valuation = valuation.copy()
+
+    @classmethod
+    def is_valid_valuation(cls, valuation):
+        """
+        Returns True iff valuation satisfies the following criteria.
+
+        Valuation should be a dict.The keys should include all Card ranks
+        (excluding jokers), and a value should be either a number (int or
+        float), or a tuple of length more than 1 containing numbers (int or
+        float), where the rank can take on any value within the tuple. In the
+        tuple case, all values must be distinct.
+        """
+
+        # Should be dict
+        assert isinstance(valuation, dict)
+        for rank in Card.ranks:
+            # Should include every card rank as key
+            assert rank in valuation.keys()
+            if type(valuation[rank]) is tuple:
+                # Tuple value should have more than one value
+                assert len(valuation[rank]) > 1
+                # Should not contain duplicates
+                assert len(valuation[rank]) == len(set(valuation[rank]))
+                for val in valuation[rank]:
+                    # Tuple component should be number
+                    assert type(val) in (int, float)
+            else:
+                # Non-tuple value should be number
+                assert type(valuation[rank]) in (int, float)

@@ -1,7 +1,4 @@
-from blackjack.player import Player
-from blackjack.card import Card
-from blackjack.hand import Hand
-from blackjack.game_config import GameConfig
+from blackjack import Card, Hand, GameConfig, Player
 
 
 class ThresholdPlayer(Player):

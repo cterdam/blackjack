@@ -1,8 +1,8 @@
-from blackjack.card import Card
+from blackjack import Card
 import random
 
 
-class Deck():
+class Deck:
     def __init__(self, num_full_decks=1, include_joker=False, ordered=False):
         """
         Initializes deck.

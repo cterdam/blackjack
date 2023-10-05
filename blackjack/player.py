@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 
 class Player(ABC):
+
     @abstractmethod
     def __init__(self, name="", bankroll=0):
         """
@@ -109,6 +110,7 @@ class Player(ABC):
         Side Effects:
             -> Subtracts half of current hand's bet from the bankroll.
         """
+        pass
 
     @abstractmethod
     def decide_split(self):
@@ -174,7 +176,7 @@ class Player(ABC):
         Params:
             payout (int or float): The amount to payout to the player.
                 Req: payout >= 0
-        
+
         Side Effects:
             -> Adds payout to the player's bankroll.
         """

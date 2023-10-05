@@ -1,124 +1,105 @@
-from blackjack.card import Card
-from blackjack.game import Game
+from blackjack import Card, GameConfig
+from enum import Enum, auto, unique
 
 
-class Hand():
+class Hand:
 
     ############################ Define constants ############################
 
+    @unique
+    class Constants(Enum):
+        """ Define constants for Hand class """
+        SOFT = auto()
+        HARD = auto()
+
     # Indicators for soft and hard hand totals
-    SOFT = 'Soft'
-    HARD = 'Hard'
+    SOFT = Constants.SOFT
+    HARD = Constants.HARD
 
     ##########################################################################
 
-    def __init__(self, h=[]):
+    def __init__(self,
+                 cards=[],
+                 blackjack_value=GameConfig.Defaults.blackjack_value,
+                 valuation=GameConfig.Defaults.valuation):
         """
         Initialize the hand.
 
         Params:
-            h (list of Card): A list of cards to start with. Default to empty.
+
+            cards (list of Card): List of cards to start with. Default to
+                empty.
                 Req: None
+
+            blackjack_value (int or float): Sum at which a hand triggers the
+                blackjack pay if dealt naturally.
+                Req: blackjack_value > 0
+
+            valuation (dict): The value each possible Card rank can take.
+                Req: The keys should include all Card ranks (excluding
+                    jokers), and a value should be either a number (int or
+                    float), or a tuple of length more than 1 containing
+                    numbers (int or float), where the rank can take on any
+                    value within the tuple. In the tuple case, all values in
+                    the tuple must be distinct.
         """
 
         """ Init param check """
-        h_wrong = False
-        if not isinstance(h, list):
-            h_wrong = True
-        else:
-            for c in h:
-                if not isinstance(c, Card):
-                    h_wrong = True
-        if h_wrong:
-            raise AssertionError('Initialization of a hand requires a list of '
-                                 'cards that can be empty.')
 
-        self.hand = h.copy()
-        num_aces, hard_total = Hand._breakdown(self.hand)
+        # Check cards
+        assert isinstance(cards, list)
+        for c in cards:
+            assert isinstance(c, Card)
 
-        self.num_aces = num_aces
-        self.hard_total = hard_total
-        self.total = Hand._calc_total(num_aces, hard_total)
-        self.uniform_value = Hand._get_uniform_value(self.hand)
+        # Check blackjack value
+        assert type(blackjack_value) in (int, float)
 
-    @classmethod
-    def _breakdown(cls, h):
-        """
-        Breaks down the list of cards into num_aces and hard_total.
+        # Check valuation
+        assert GameConfig.is_valid_valuation(valuation)
 
-        Params:
-            h (List of Card): List of cards to break down.
-                Req: None
+        """ Assign attributes """
 
-        Returns (tuple): (num_aces, hard_total) where
-            num_aces (int) -> the number of Ace cards in the list
-                Inv: num_aces >= 0
-            hard_total (int) -> the sum of values of all non-Ace cards in the
-                list
-                Inv: hard_total >= 0
-        """
-        num_aces = 0
-        hard_total = 0
-        for c in h:
-            if c.is_ace():
-                num_aces += 1
+        # Store attributes
+        self.cards = cards.copy()
+        self._blackjack_value = blackjack_value
+        self._valuation = valuation.copy()
+
+        # Compute tally
+        #   tally dict should include every card rank as key
+        self._tally = {rank: 0 for rank in Card.ranks}
+        for card in cards:
+            self._tally[card.rank] += 1
+
+        # Compute uniform value
+        self.uniform_value = valuation[cards[0].rank] if len(
+            {valuation[card.rank] for card in cards}) == 1 else None
+
+        # Compute total
+        self._soft_tuples = []
+        self._hard_total = 0
+        for card in cards:
+            if type(valuation[card.rank]) is tuple:
+                self._soft_tuples.append(valuation[card.rank])
             else:
-                hard_total += Game.rank2value[c.rank]
-        return num_aces, hard_total
+                self._hard_total += self._valuation[card.rank]
+        self.total = self._calc_total()
 
-    @classmethod
-    def _calc_total(cls, num_aces, hard_total):
+    def _calc_total(self):
         """
-        Calculates the total for the current num_aces and hard_total.
+        Calculates the total for the current Hand.
 
-        Params:
-            num_aces (int): The number of Ace cards in the hand.
-                Req: num_aces >= 0
-            hard_total (int): The sum of values of all non-Ace cards in the
-                hand.
-                Req: hard_total >= 0
+        Params: None
 
         Returns (tuple): (mode, value) where
             mode -> is in (Hand.SOFT, Hand.HARD).
-            value (int) -> total of this hand.
+                Hand.SOFT if there is at least one soft card which takes a
+                    non-minimum value.
+                Hand.HARD if there is no soft cards or all soft cards take
+                    their minimum value.
+            value (int or float) -> total of this hand.
         """
 
-        # If no ace, hand total is hard total
-        if num_aces == 0:
-            return (Hand.HARD, hard_total)
-
-        # There is at least one Ace
-        less_one_ace = hard_total + num_aces - 1
-        if less_one_ace <= 10:
-            # Soft total, one ace counts as 11
-            return (Hand.SOFT, less_one_ace + 11)
-        else:
-            # Hard total, all aces count as 1
-            return (Hand.HARD, less_one_ace + 1)
-
-    @classmethod
-    def _get_uniform_value(cls, h):
-        """
-        Determine if the list contains some cards of the same rank value.
-
-        Params:
-            h (list of Card): list of cards to survey.
-                Req: None
-
-        Returns:
-            if h contains at lease one card and all cards in the list are the
-                same rank
-                -> rank, where
-                    - rank in Card.ranks
-                    - rank is the common rank of all cards in h
-            else (if h is empty, or if at least two cards differ in rank)
-                -> None
-        """
-        ranks = {c.rank for c in h}
-        if len(ranks) == 1:
-            return h[0].rank
-        else:
-            return None
+        pass
 
     def add(self, newcard):
         """
@@ -131,38 +112,50 @@ class Hand():
         Returns:
             self (Hand) after adding the card and updating data.
         """
-        self.hand.append(newcard)
-        if newcard.is_ace():
-            self.num_aces += 1
-        else:
-            self.hard_total += Game.rank2value[newcard.rank]
-        self.total = Hand._calc_total(self.num_aces, self.hard_total)
+
+        self.cards.append(newcard)
+        self._tally[newcard.rank] += 1
+
+        # Update hard total / soft cards
+
+        # Update total
+
+        # Update uniform value
         if self.uniform_value != None:
             if newcard.rank != self.uniform_value:
                 self.uniform_value = None
         else:
-            if len(self.hand) == 1:
-                self.uniform_value = self.hand[0].rank
+            if len(self.cards) == 1:
+                self.uniform_value = self.cards[0].rank
 
         return self
 
+    # def explode(self):
+    #     """
+    #     Creates a separate hand for each card in the current hand.
+
+    #     Params: None
+
+    #     Returns:
+    #         A list of hand objects each containing a single card from the
+    #         original hand.
+    #     """
+    #     return [Hand(c) for c in self.hand]
+
     def __eq__(self, other):
         """
-        Two hands are equal when they are equal in num_aces, hard_total,
-        total, and uniform_value.
+        Two hands are equal when they contain the same card ranks, regardless of
+            order.
         """
         if not isinstance(other, Hand):
             return False
-        return self.num_aces == other.num_aces\
-            and self.hard_total == other.hard_total\
-            and self.total == other.total\
-            and self.uniform_value == other.uniform_value
+        return self._tally == other._tally
 
     def __str__(self):
         """
         Short string representation of the hand.
         """
-        return f'Hand of {len(self.hand)} cards'
+        return f'Hand of {len(self.cards)} cards'
 
     def __repr__(self):
         """
@@ -179,7 +172,7 @@ class Hand():
             where the furthest left card is first in the hand.
         """
         target = 'Hand [ '
-        for c in self.hand:
+        for c in self.cards:
             target += str(c)
             target += ' '
         target += ']'

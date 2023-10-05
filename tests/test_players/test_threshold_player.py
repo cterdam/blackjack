@@ -1,15 +1,13 @@
 import pytest
-from blackjack.card import Card
-from blackjack.deck import Deck
-from blackjack.game_config import GameConfig
-from blackjack.hand import Hand
-from blackjack.player import Player
-from blackjack.players.threshold_player import ThresholdPlayer
+from blackjack import Card, Deck, Hand, GameConfig
+from blackjack.players import ThresholdPlayer
 
-# Runs f(input) for all input in inputs
+
 def parametrize_test(inputs, f):
+    # Runs f(input) for all input in inputs
     for input in inputs:
         f(input)
+
 
 def test_init_params():
 
@@ -121,7 +119,7 @@ def test_place_bet():
         assert type(t._hand_index) is int
         assert t._hand_index == 0
         assert type(t._hands[t._hand_index]) is Hand
-        assert t._hands[t._hand_index].hand == []
+        assert t._hands[t._hand_index].cards == []
 
     # Test Illegal Calls
     t = ThresholdPlayer()
@@ -329,11 +327,13 @@ def test_decide_split_surrender_double():
     def invalid_setting(f):
         with pytest.raises(AssertionError):
             f()
-    parametrize_test([t.decide_split, t.decide_double, t.decide_surrender], invalid_setting)
+    parametrize_test([t.decide_split, t.decide_double,
+                     t.decide_surrender], invalid_setting)
 
     t.sit_down(gc)
 
-    parametrize_test([t.decide_split, t.decide_double, t.decide_surrender], invalid_setting)
+    parametrize_test([t.decide_split, t.decide_double,
+                     t.decide_surrender], invalid_setting)
 
     # Threshold Player Must Never Split, Surrender, or Double
     cards = Deck(num_full_decks=1)

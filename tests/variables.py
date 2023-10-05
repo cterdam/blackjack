@@ -1,4 +1,4 @@
-from blackjack.card import Card
+from blackjack import Card
 
 # Card lists for testing
 h = []

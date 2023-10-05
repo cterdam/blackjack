@@ -1,4 +1,4 @@
-from blackjack.card import Card
+from blackjack import Card
 import itertools
 import pytest
 
@@ -54,7 +54,7 @@ def test_init_params():
         assert len(suits_collected) > 2
 
     # Random rank, given suit
-    num_trials = 15
+    num_trials = 25
     suits_to_try = {Card.CLUBS, Card.DIAMONDS, Card.HEARTS, Card.SPADES}
     ranks_collected = set()
     for s in suits_to_try:

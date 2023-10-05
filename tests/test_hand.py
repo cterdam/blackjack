@@ -1,5 +1,4 @@
-from blackjack.hand import Hand
-from blackjack.card import Card
+from blackjack import Card, Hand
 from tests.variables import *
 import pytest
 
@@ -19,75 +18,6 @@ def test_init_params():
     Hand([])
     Hand([Card()])
     Hand([Card(), Card(), Card()])
-
-
-def test_breakdown():
-    assert Hand._breakdown(h) == (0, 0)
-    assert Hand._breakdown(h2) == (0, 2)
-    assert Hand._breakdown(h23) == (0, 5)
-    assert Hand._breakdown(h55) == (0, 10)
-    assert Hand._breakdown(A) == (1, 0)
-    assert Hand._breakdown(h66) == (0, 12)
-    assert Hand._breakdown(AA) == (2, 0)
-    assert Hand._breakdown(h67) == (0, 13)
-    assert Hand._breakdown(AAAJ) == (3, 10)
-    assert Hand._breakdown(AAA) == (3, 0)
-    assert Hand._breakdown(AA64) == (2, 10)
-    assert Hand._breakdown(AA3) == (2, 3)
-    assert Hand._breakdown(A6) == (1, 6)
-    assert Hand._breakdown(h8352) == (0, 18)
-    assert Hand._breakdown(A45) == (1, 9)
-    assert Hand._breakdown(K28) == (0, 20)
-    assert Hand._breakdown(AK) == (1, 10)
-    assert Hand._breakdown(h777) == (0, 21)
-    assert Hand._breakdown(Q75) == (0, 22)
-    assert Hand._breakdown(JQK5A) == (1, 35)
-
-
-def test_calc_total():
-    assert Hand._calc_total(0, 0) == (Hand.HARD, 0)
-    assert Hand._calc_total(0, 2) == (Hand.HARD, 2)
-    assert Hand._calc_total(0, 5) == (Hand.HARD, 5)
-    assert Hand._calc_total(0, 10) == (Hand.HARD, 10)
-    assert Hand._calc_total(1, 0) == (Hand.SOFT, 11)
-    assert Hand._calc_total(2, 0) == (Hand.SOFT, 12)
-    assert Hand._calc_total(0, 12) == (Hand.HARD, 12)
-    assert Hand._calc_total(0, 13) == (Hand.HARD, 13)
-    assert Hand._calc_total(3, 10) == (Hand.HARD, 13)
-    assert Hand._calc_total(3, 0) == (Hand.SOFT, 13)
-    assert Hand._calc_total(2, 10) == (Hand.HARD, 12)
-    assert Hand._calc_total(2, 3) == (Hand.SOFT, 15)
-    assert Hand._calc_total(1, 6) == (Hand.SOFT, 17)
-    assert Hand._calc_total(0, 18) == (Hand.HARD, 18)
-    assert Hand._calc_total(1, 9) == (Hand.SOFT, 20)
-    assert Hand._calc_total(0, 20) == (Hand.HARD, 20)
-    assert Hand._calc_total(0, 21) == (Hand.HARD, 21)
-    assert Hand._calc_total(1, 10) == (Hand.SOFT, 21)
-    assert Hand._calc_total(0, 22) == (Hand.HARD, 22)
-    assert Hand._calc_total(1, 35) == (Hand.HARD, 36)
-
-
-def test_get_uniform_value():
-    assert Hand._get_uniform_value(h) == None
-    assert Hand._get_uniform_value(h2) == Card.NUM_2
-    assert Hand._get_uniform_value(h23) == None
-    assert Hand._get_uniform_value(h55) == Card.NUM_5
-    assert Hand._get_uniform_value(A) == Card.ACE
-    assert Hand._get_uniform_value(h66) == Card.NUM_6
-    assert Hand._get_uniform_value(AA) == Card.ACE
-    assert Hand._get_uniform_value(h67) == None
-    assert Hand._get_uniform_value(AAAJ) == None
-    assert Hand._get_uniform_value(AAA) == Card.ACE
-    assert Hand._get_uniform_value(AA64) == None
-    assert Hand._get_uniform_value(AA3) == None
-    assert Hand._get_uniform_value(A6) == None
-    assert Hand._get_uniform_value(h8352) == None
-    assert Hand._get_uniform_value(A45) == None
-    assert Hand._get_uniform_value(K28) == None
-    assert Hand._get_uniform_value(AK) == None
-    assert Hand._get_uniform_value(h777) == Card.NUM_7
-    assert Hand._get_uniform_value(Q75) == None
-    assert Hand._get_uniform_value(JQK5A) == None
 
 
 def test_add():
